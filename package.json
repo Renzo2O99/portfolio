@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "lint:lenses": "node scripts/lens/runner.mjs",
+    "audit:exceptions": "node scripts/audit-exceptions.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",
