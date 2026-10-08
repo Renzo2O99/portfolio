@@ -387,7 +387,7 @@ textPath {
   letter-spacing: -0.01em;
   line-height: 0.9em;
   color: white;
-  transform-origin: top left;
+  transform-origin: center center;
 }
 
 .section__3 .work__cto {
@@ -519,6 +519,7 @@ textPath {
   background: hsl(0deg 0% 100% / 5%);
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(10px);
+  z-index: 20;
 }
 
 .section__5 .footer__img_wrapper {

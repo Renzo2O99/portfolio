@@ -96,6 +96,23 @@ const bgImagesData = [
   },
 ];
 
+const mobilePositions = [
+  { left: 16, top: 16, rotate: -12 },
+  { left: 84, top: 15, rotate: 14 },
+  { left: 54, top: 13, rotate: -6 },
+  { left: 12, top: 31, rotate: 10 },
+  { left: 36, top: 25, rotate: -8 },
+  { left: 88, top: 29, rotate: -14 },
+  { left: 68, top: 24, rotate: 12 },
+  { left: 8, top: 49, rotate: -10 },
+  { left: 92, top: 47, rotate: 8 },
+  { left: 14, top: 67, rotate: 14 },
+  { left: 34, top: 73, rotate: -12 },
+  { left: 86, top: 65, rotate: -10 },
+  { left: 66, top: 71, rotate: 10 },
+  { left: 50, top: 83, rotate: -4 },
+];
+
 function getRandDistrubutedTop(index: number, targets: any[]) {
   const mid = Math.floor(targets.length / 2);
   if (index === 0) {
@@ -133,35 +150,74 @@ export const BgImagesContainer = ({
 
   const bgImagesTween = useRef<gsap.core.Tween | null>(null);
   const GAP = 6;
+
   useEffect(() => {
-    bgImagesTween.current = gsap.fromTo(
-      ".bgImages",
-      {
-        y: "200%",
-        x: "0%",
-        left: "50%",
-        rotate: 0,
-        top: "50%",
-      },
-      {
-        y: "-50%",
-        x: "0%",
-        left: function (index, target, targets) {
-          return 90 + index * -GAP + "%";
+    const mm = gsap.matchMedia();
+
+    mm.add("(min-width: 768px)", () => {
+      bgImagesTween.current = gsap.fromTo(
+        ".bgImages",
+        {
+          y: "200%",
+          x: "0%",
+          left: "50%",
+          rotate: 0,
+          top: "50%",
         },
-        top: function (index, target, targets) {
-          return getRandDistrubutedTop(index, targets) + "%";
+        {
+          y: "-50%",
+          x: "0%",
+          left: function (index) {
+            return 90 + index * -GAP + "%";
+          },
+          top: function (index, target, targets) {
+            return getRandDistrubutedTop(index, targets) + "%";
+          },
+          rotate: function () {
+            return getRandValues(-30, 30);
+          },
+          paused: true,
+          delay: 0.8,
+          stagger: 0.08,
+          duration: 1,
+          ease: CustomEase.create("custom", "M0,0,C0.5,0,0,1,1,1"),
         },
-        rotate: function (index, target, targets) {
-          return getRandValues(-30, 30);
+      );
+    });
+
+    mm.add("(max-width: 767px)", () => {
+      bgImagesTween.current = gsap.fromTo(
+        ".bgImages",
+        {
+          y: "200%",
+          x: "0%",
+          left: "50%",
+          rotate: 0,
+          top: "50%",
         },
-        paused: true,
-        delay: 0.8,
-        stagger: 0.08,
-        duration: 1,
-        ease: CustomEase.create("custom", "M0,0,C0.5,0,0,1,1,1"),
-      },
-    );
+        {
+          y: "-50%",
+          x: "0%",
+          left: function (index) {
+            const pos = mobilePositions[index % mobilePositions.length];
+            return pos.left + "%";
+          },
+          top: function (index) {
+            const pos = mobilePositions[index % mobilePositions.length];
+            return pos.top + "%";
+          },
+          rotate: function (index) {
+            const pos = mobilePositions[index % mobilePositions.length];
+            return pos.rotate;
+          },
+          paused: true,
+          delay: 0.8,
+          stagger: 0.06,
+          duration: 0.9,
+          ease: CustomEase.create("custom", "M0,0,C0.5,0,0,1,1,1"),
+        },
+      );
+    });
 
     bgImagesSharedRef.current = gsap.fromTo(
       ".footer__img_wrapper",
@@ -197,6 +253,7 @@ export const BgImagesContainer = ({
     }
 
     return () => {
+      mm.revert();
       bgImagesTween.current?.kill();
       bgImagesSharedRef.current?.kill();
       observer.disconnect();

@@ -115,42 +115,9 @@ export function AboutWrapper({}) {
         className="anime relative flex h-[260px] w-full items-center justify-center md:h-[380px]"
       >
         <div className="flex flex-col items-center justify-center">
-          <div className="anime">
+          <div>
             <h2 className="work_heading mask">{text.main}</h2>
           </div>
-          {/* <a href={links.work} className="work__cto anime">
-            <div className="left">
-              <svg
-                width="21"
-                height="6"
-                viewBox="0 0 21 6"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M0.5 2V4H14.5V6L20.5 3L14.5 0V2H0.5Z"
-                  fill="var(--colorLight)"
-                />
-              </svg>
-            </div>
-            <div className="center font-bold">
-              view all work<span className="yellow__it"> .</span>
-            </div>
-            <div className="right">
-              <svg
-                width="21"
-                height="6"
-                viewBox="0 0 21 6"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M0.5 2V4H14.5V6L20.5 3L14.5 0V2H0.5Z"
-                  fill="var(--colorLight)"
-                />
-              </svg>
-            </div>
-          </a> */}
         </div>
         <div className="section3__video overflow-hidden rounded-3xl bg-black md:rounded-[3rem]">
           <video

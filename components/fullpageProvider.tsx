@@ -7,8 +7,6 @@ import { FullpageNavContext } from "@/components/fullpageNavContext";
 
 gsap.registerPlugin(CustomEase);
 
-import SplitType from "split-type";
-
 const ANCHORS = ["first", "second", "third", "fourth", "fifth", "sixth"] as const;
 
 type Anchor = (typeof ANCHORS)[number];
@@ -20,10 +18,7 @@ const TOUCH_THRESHOLD = 50;
 const FullpageProvider = ({ children }: { children: React.ReactNode }) => {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const about = useRef<gsap.core.Timeline | null>(null);
-  const textAnim__section2__down = useRef<gsap.core.Tween | null>(null);
-  const work_heading = useRef<gsap.core.Tween | null>(null);
   const videoElement = useRef<HTMLVideoElement | null>(null);
-  const splitTypeInitialized = useRef(false);
 
   const ease = useMemo(
     () => CustomEase.create("custom", "M0,0 C0.52,0.01 0.16,1 1,1 "),
@@ -55,19 +50,6 @@ const FullpageProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       if (anchor === "second") {
-        if (direction === "down") {
-          textAnim__section2__down.current?.restart(true);
-        } else {
-          textAnim__section2__down.current?.restart();
-        }
-      }
-
-      if (anchor === "third") {
-        if (direction === "down") {
-          work_heading.current?.restart(true);
-        } else {
-          work_heading.current?.restart();
-        }
         if (videoElement.current) {
           videoElement.current.currentTime = 1.6;
           videoElement.current.play().catch(() => {});
@@ -171,39 +153,6 @@ const FullpageProvider = ({ children }: { children: React.ReactNode }) => {
   }, [ease]);
 
   useEffect(() => {
-    if (!splitTypeInitialized.current) {
-      splitTypeInitialized.current = true;
-      new SplitType("#my-text", { types: "lines" });
-      new SplitType("#my-text .line", {
-        types: "lines",
-        lineClass: "innnerLine",
-      });
-    }
-
-    textAnim__section2__down.current = gsap.from("#my-text .line .innnerLine", {
-      duration: 1.5,
-      y: "200%",
-      opacity: 0,
-      skewX: -10,
-      paused: true,
-      delay: 0.25,
-      stagger: 0.12,
-      ease: CustomEase.create("custom", "M0,0,C0.5,0,0,1,1,1"),
-    });
-
-    work_heading.current = gsap.fromTo(
-      ".work_heading",
-      { rotate: 15, scaleY: 1.5 },
-      {
-        rotate: 0,
-        scaleY: 1,
-        opacity: 1,
-        delay: 0.7,
-        duration: 1.3,
-        ease: CustomEase.create("custom", "M0,0,C0.5,0,0,1,1,1"),
-      },
-    );
-
     videoElement.current = document.querySelector(
       "#video",
     ) as HTMLVideoElement;

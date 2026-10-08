@@ -15,9 +15,14 @@ const helvetica = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Vipul Kumar • Developer",
+  title: "Renzo Dev • Developer",
   description:
-    "Vipul Kumar is a developer who creates beautiful and pixel perfect websites with zero effort in reviews.",
+    "Renzo is a developer who creates high-end, pixel-perfect websites.",
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
@@ -32,6 +37,9 @@ export default function RootLayout({
           name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no"
         ></meta>
+        <link rel="icon" href="/favicon.png" type="image/png" sizes="any" />
+        <link rel="shortcut icon" href="/favicon.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/favicon.png" />
         <GoogleAnalytics />
       </head>
 
