@@ -35,8 +35,15 @@ const FullpageProvider = ({ children }: { children: React.ReactNode }) => {
     [],
   );
 
+  const animatedAnchors = useRef<Set<Anchor>>(new Set<Anchor>(["first"]));
+
   const handleSectionChange = useCallback(
     (anchor: Anchor, direction: "up" | "down") => {
+      const isFirstTime = !animatedAnchors.current.has(anchor);
+      if (isFirstTime) {
+        animatedAnchors.current.add(anchor);
+      }
+
       if (anchor === "second" || anchor === "fourth") {
         document.body.classList.add("darkGradient");
       } else {
@@ -73,11 +80,13 @@ const FullpageProvider = ({ children }: { children: React.ReactNode }) => {
           },
         );
 
-        gsap.fromTo(
-          `.${anchor} .anime`,
-          { y: "30vh" },
-          { y: "0vh", duration: 1.1, stagger: 0.03, ease },
-        );
+        if (isFirstTime) {
+          gsap.fromTo(
+            `.${anchor} .anime`,
+            { y: "30vh", opacity: 0 },
+            { y: "0vh", opacity: 1, duration: 1.1, stagger: 0.03, ease },
+          );
+        }
       } else {
         gsap.fromTo(
           `.${anchor} .rounded__div__up`,
@@ -89,11 +98,13 @@ const FullpageProvider = ({ children }: { children: React.ReactNode }) => {
           },
         );
 
-        gsap.fromTo(
-          `.${anchor} .anime`,
-          { y: "-30vh" },
-          { y: "0vh", duration: 1.1, stagger: -0.08, ease },
-        );
+        if (isFirstTime) {
+          gsap.fromTo(
+            `.${anchor} .anime`,
+            { y: "-30vh", opacity: 0 },
+            { y: "0vh", opacity: 1, duration: 1.1, stagger: -0.08, ease },
+          );
+        }
       }
     },
     [],
@@ -230,7 +241,7 @@ const FullpageProvider = ({ children }: { children: React.ReactNode }) => {
       setCurrent(next);
 
       gsap.to(trackRef.current, {
-        yPercent: -(next / total) * 100,
+        y: `-${next * 100}dvh`,
         duration: 0.9,
         ease: scrollEase,
         overwrite: true,
@@ -239,7 +250,10 @@ const FullpageProvider = ({ children }: { children: React.ReactNode }) => {
           handleSectionChange(nextAnchor, direction);
         },
         onComplete: () => {
-          lockedRef.current = false;
+          setTimeout(() => {
+            lockedRef.current = false;
+            wheelAccum = 0;
+          }, 600);
         },
       });
     };
@@ -294,7 +308,7 @@ const FullpageProvider = ({ children }: { children: React.ReactNode }) => {
       else goTo(activeIndex - 1, "up");
     };
 
-    gsap.set(trackRef.current, { yPercent: 0 });
+    gsap.set(trackRef.current, { y: 0 });
 
     window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("keydown", onKeyDown);
@@ -322,7 +336,7 @@ const FullpageProvider = ({ children }: { children: React.ReactNode }) => {
 
       const total = sectionsRef.current.length;
       gsap.to(trackRef.current, {
-        yPercent: -(next / total) * 100,
+        y: `-${next * 100}dvh`,
         duration: 0.9,
         ease: scrollEase,
         overwrite: true,
@@ -335,7 +349,9 @@ const FullpageProvider = ({ children }: { children: React.ReactNode }) => {
           }
         },
         onComplete: () => {
-          lockedRef.current = false;
+          setTimeout(() => {
+            lockedRef.current = false;
+          }, 600);
         },
       });
     },

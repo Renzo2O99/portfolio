@@ -20,7 +20,7 @@ export function ContactSection({}) {
           text: "Contact",
         }}
         onMouseEnter={() => {
-          bgImagesSharedRef.current?.restart(true);
+          bgImagesSharedRef.current?.play();
         }}
         onMouseLeave={() => {
           bgImagesSharedRef.current?.reverse();

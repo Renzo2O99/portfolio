@@ -18,36 +18,43 @@ import Webflow from "@/public/svg/webflow.svg";
 
 export function AboutMarquee({}) {
   useEffect(() => {
-    gsap.fromTo(
-      `.rollingText2`,
-      {
-        xPercent: 0,
-      },
-      {
-        xPercent: -100,
-        duration: 20,
-        ease: CustomEase.create("custom", "M0,0,C0,0,1,1,1,1"),
-        repeat: -1,
-      },
-    );
+    const ctx = gsap.context(() => {
+      const el = document.querySelector(".rollingText3") as HTMLElement | null;
+      if (el) {
+        gsap.set(`.rollingText3`, {
+          left: `${el.offsetWidth}px`,
+        });
+      }
 
-    gsap.fromTo(
-      `.rollingText3`,
-      {
-        xPercent: 0,
-      },
-      {
-        xPercent: -100,
-        duration: 20,
-        ease: CustomEase.create("custom", "M0,0,C0,0,1,1,1,1"),
-        repeat: -1,
-      },
-    );
-    gsap.set(`.rollingText3`, {
-      //@ts-ignore
-      left: `${document.querySelector(".rollingText3").offsetWidth}`,
+      gsap.fromTo(
+        `.rollingText2`,
+        {
+          xPercent: 0,
+        },
+        {
+          xPercent: -100,
+          duration: 20,
+          ease: CustomEase.create("custom", "M0,0,C0,0,1,1,1,1"),
+          repeat: -1,
+        },
+      );
+
+      gsap.fromTo(
+        `.rollingText3`,
+        {
+          xPercent: 0,
+        },
+        {
+          xPercent: -100,
+          duration: 20,
+          ease: CustomEase.create("custom", "M0,0,C0,0,1,1,1,1"),
+          repeat: -1,
+        },
+      );
     });
-  });
+
+    return () => ctx.revert();
+  }, []);
   return (
     <div
       id="one"

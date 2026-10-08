@@ -142,8 +142,6 @@ export const BgImagesContainer = ({
         left: "50%",
         rotate: 0,
         top: "50%",
-
-        // filter: "blur(20px)",
       },
       {
         y: "-50%",
@@ -157,9 +155,7 @@ export const BgImagesContainer = ({
         rotate: function (index, target, targets) {
           return getRandValues(-30, 30);
         },
-        // filter: "blur(0px)",
-
-        // paused: true,
+        paused: true,
         delay: 0.8,
         stagger: 0.08,
         duration: 1,
@@ -183,11 +179,29 @@ export const BgImagesContainer = ({
       },
     );
 
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            bgImagesTween.current?.play();
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    const section = document.querySelector(".section__5");
+    if (section) {
+      observer.observe(section);
+    }
+
     return () => {
       bgImagesTween.current?.kill();
       bgImagesSharedRef.current?.kill();
+      observer.disconnect();
     };
-  });
+  }, [bgImagesSharedRef]);
 
   return (
     <div className="footer__img_wrapper bg-transparent-foreground  !absolute flex h-[100%] w-[100%] items-center justify-center overflow-hidden ">
