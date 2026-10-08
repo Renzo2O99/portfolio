@@ -2,16 +2,10 @@ import { readdirSync, statSync, readFileSync, existsSync } from "node:fs";
 import { join, relative } from "node:path";
 
 export const ROOT = new URL("../..", import.meta.url).pathname.replace(/^\/([A-Z]:)/, "$1");
-
-export const MODULES_DIR = existsSync(join(ROOT, "src/modules"))
-  ? join(ROOT, "src/modules")
-  : existsSync(join(ROOT, "modules"))
-    ? join(ROOT, "modules")
-    : join(ROOT, "components");
-
-export const SHARED_DIR = existsSync(join(ROOT, "src/shared")) ? join(ROOT, "src/shared") : join(ROOT, "lib");
-export const INFRA_DIR = existsSync(join(ROOT, "src/infrastructure")) ? join(ROOT, "src/infrastructure") : join(ROOT, "actions");
-export const COMMON_DIR = existsSync(join(ROOT, "src/common")) ? join(ROOT, "src/common") : join(ROOT, "components/ui");
+export const MODULES_DIR = join(ROOT, "src/modules");
+export const SHARED_DIR = join(ROOT, "src/shared");
+export const INFRA_DIR = join(ROOT, "src/infrastructure");
+export const COMMON_DIR = join(ROOT, "src/common");
 
 /**
  * Carpetas obligatorias en módulos de dominio.

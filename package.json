@@ -15,6 +15,7 @@
     "@base-ui/react": "^1.0.0",
     "@hookform/resolvers": "^3.3.4",
     "@react-three/drei": "^9.114.0",
+    "@react-three/fiber": "^9.8.1",
     "@react-three/postprocessing": "^2.16.3",
     "@splinetool/loader": "^1.9.28",
     "@splinetool/r3f-spline": "^1.0.2",
@@ -33,6 +34,7 @@
     "swiper": "^11.0.6",
     "tailwind-merge": "^2.2.0",
     "tailwindcss-animate": "^1.0.7",
+    "three": "^0.186.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {

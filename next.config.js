@@ -11,6 +11,9 @@ const nextConfig = {
         as: "*.js",
       },
     },
+    resolveAlias: {
+      "@/public": "public",
+    },
   },
 };
 
