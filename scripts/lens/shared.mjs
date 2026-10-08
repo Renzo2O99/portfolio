@@ -2,10 +2,16 @@ import { readdirSync, statSync, readFileSync, existsSync } from "node:fs";
 import { join, relative } from "node:path";
 
 export const ROOT = new URL("../..", import.meta.url).pathname.replace(/^\/([A-Z]:)/, "$1");
-export const MODULES_DIR = join(ROOT, "src/modules");
-export const SHARED_DIR = join(ROOT, "src/shared");
-export const INFRA_DIR = join(ROOT, "src/infrastructure");
-export const COMMON_DIR = join(ROOT, "src/common");
+
+export const MODULES_DIR = existsSync(join(ROOT, "src/modules"))
+  ? join(ROOT, "src/modules")
+  : existsSync(join(ROOT, "modules"))
+    ? join(ROOT, "modules")
+    : join(ROOT, "components");
+
+export const SHARED_DIR = existsSync(join(ROOT, "src/shared")) ? join(ROOT, "src/shared") : join(ROOT, "lib");
+export const INFRA_DIR = existsSync(join(ROOT, "src/infrastructure")) ? join(ROOT, "src/infrastructure") : join(ROOT, "actions");
+export const COMMON_DIR = existsSync(join(ROOT, "src/common")) ? join(ROOT, "src/common") : join(ROOT, "components/ui");
 
 /**
  * Carpetas obligatorias en módulos de dominio.
@@ -233,16 +239,29 @@ export const MODULE_OVERRIDES = {
 };
 
 export function isLibrary(modName) {
-  return LIBRARY_DIRS.includes(modName);
+  return LIBRARY_DIRS.includes(modName) || modName === "ui";
 }
 
 /**
  * Resuelve el directorio de un target de auditoría.
- * Librerías (common, shared, infrastructure) viven en src/<lib>;
- * los módulos de dominio en src/modules/<mod>.
+ * Librerías (common, shared, infrastructure) viven en src/<lib> o <lib>;
+ * los módulos de dominio en src/modules/<mod>, modules/<mod> o components/<mod>.
  */
 export function getModDir(modName, ...rest) {
-  const base = isLibrary(modName) ? join(ROOT, "src", modName) : join(MODULES_DIR, modName);
+  let base;
+  if (isLibrary(modName)) {
+    if (existsSync(join(ROOT, "src", modName))) {
+      base = join(ROOT, "src", modName);
+    } else if (existsSync(join(ROOT, modName))) {
+      base = join(ROOT, modName);
+    } else if (modName === "ui" && existsSync(join(ROOT, "components/ui"))) {
+      base = join(ROOT, "components/ui");
+    } else {
+      base = join(ROOT, modName);
+    }
+  } else {
+    base = join(MODULES_DIR, modName);
+  }
   return rest.length ? join(base, ...rest) : base;
 }
 
@@ -254,7 +273,16 @@ export function getModuleOverride(modName, lensId, rule) {
 
 export function getModules() {
   try {
-    return readdirSync(MODULES_DIR).filter((e) => statSync(join(MODULES_DIR, e)).isDirectory());
+    if (!existsSync(MODULES_DIR)) return [];
+    return readdirSync(MODULES_DIR)
+      .filter((e) => {
+        if (e.startsWith(".") || e === "ui") return false;
+        try {
+          return statSync(join(MODULES_DIR, e)).isDirectory();
+        } catch {
+          return false;
+        }
+      });
   } catch {
     return [];
   }
