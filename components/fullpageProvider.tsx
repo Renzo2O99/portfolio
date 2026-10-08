@@ -57,9 +57,16 @@ const FullpageProvider = ({ children }: { children: React.ReactNode }) => {
       if (anchor === "second") {
         if (direction === "down") {
           textAnim__section2__down.current?.restart(true);
-          work_heading.current?.restart(true);
         } else {
           textAnim__section2__down.current?.restart();
+        }
+      }
+
+      if (anchor === "third") {
+        if (direction === "down") {
+          work_heading.current?.restart(true);
+        } else {
+          work_heading.current?.restart();
         }
         if (videoElement.current) {
           videoElement.current.currentTime = 1.6;
@@ -241,7 +248,7 @@ const FullpageProvider = ({ children }: { children: React.ReactNode }) => {
       setCurrent(next);
 
       gsap.to(trackRef.current, {
-        y: `-${next * 100}dvh`,
+        yPercent: -(next / total) * 100,
         duration: 0.9,
         ease: scrollEase,
         overwrite: true,
@@ -308,7 +315,7 @@ const FullpageProvider = ({ children }: { children: React.ReactNode }) => {
       else goTo(activeIndex - 1, "up");
     };
 
-    gsap.set(trackRef.current, { y: 0 });
+    gsap.set(trackRef.current, { yPercent: 0 });
 
     window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("keydown", onKeyDown);
@@ -336,7 +343,7 @@ const FullpageProvider = ({ children }: { children: React.ReactNode }) => {
 
       const total = sectionsRef.current.length;
       gsap.to(trackRef.current, {
-        y: `-${next * 100}dvh`,
+        yPercent: -(next / total) * 100,
         duration: 0.9,
         ease: scrollEase,
         overwrite: true,
