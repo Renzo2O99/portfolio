@@ -1,8 +1,13 @@
+import { useEffect, useState } from "react";
+import { cn, getJoinedDate, links } from "@/shared";
+import { CONTACT_TEXTS } from "../../lib/contact-texts.constants";
 import { FooterGroup } from "./FooterGroup";
-import { links } from "@/shared/data/data";
-import { cn, getJoinedDate } from "@/shared/lib/utils";
-import React, { useEffect, useRef, useState } from "react";
-export function Footer({ className }: { className?: string }) {
+
+type FooterProps = {
+  className?: string;
+};
+
+export function Footer({ className }: FooterProps) {
   const [currentTime, setCurrentTime] = useState("");
 
   useEffect(() => {
@@ -23,34 +28,20 @@ export function Footer({ className }: { className?: string }) {
   }, []);
 
   return (
-    <footer
-      className={cn(
-        "footer__links absolute flex  w-full flex-wrap   px-paddingX mix-blend-difference ",
-        className,
-      )}
-    >
+    <footer className={cn("footer__links absolute flex w-full flex-wrap px-paddingX mix-blend-difference", className)}>
       <div className="mx-auto flex w-full max-w-maxWidth gap-0 md:gap-12">
-        <FooterGroup
-          title="LOCAL TIME"
-          className="hidden md:block"
-          links={[{ href: "", text: currentTime }]}
-        />
-        <FooterGroup
-          className="hidden md:block"
-          title="OPEN SOURCE"
-          isMagnetic={true}
-          links={[{ href: links.sourceCode, text: "View on GitHub" }]}
-        />
+        <FooterGroup title={CONTACT_TEXTS.LABEL_LOCAL_TIME} className="hidden md:block" links={[{ href: "", text: currentTime }]} />
+        <FooterGroup className="hidden md:block" title={CONTACT_TEXTS.LABEL_OPEN_SOURCE} isMagnetic={true} links={[{ href: links.sourceCode, text: CONTACT_TEXTS.LABEL_VIEW_ON_GITHUB }]} />
 
         <FooterGroup
-          title="SOCIALS"
+          title={CONTACT_TEXTS.LABEL_SOCIALS}
           className="md:ml-auto"
           isMagnetic={true}
           links={[
-            { href: links.email, text: "Email" },
-            { href: links.twitter, text: "Twitter" },
-            { href: links.telegram, text: "Telegram" },
-            { href: links.github, text: "Github" },
+            { href: links.email, text: CONTACT_TEXTS.LABEL_EMAIL },
+            { href: links.twitter, text: CONTACT_TEXTS.LABEL_TWITTER },
+            { href: links.telegram, text: CONTACT_TEXTS.LABEL_TELEGRAM },
+            { href: links.github, text: CONTACT_TEXTS.LABEL_GITHUB },
           ]}
         />
       </div>

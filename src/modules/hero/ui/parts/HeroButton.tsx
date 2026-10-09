@@ -1,46 +1,43 @@
-import React, { useEffect, useRef } from "react";
-import Image from "next/image";
-import Magentic from "@/common/ui/parts/Magentic";
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
+import Image from "next/image";
+import { useEffect, useRef } from "react";
+import { Magentic } from "@/common";
+import { HERO_TEXTS } from "../../lib/hero-texts.constants";
 
 gsap.registerPlugin(CustomEase);
 
-export function HeroButton({}) {
+export function HeroButton() {
   const rotateImageRef = useRef<gsap.core.Timeline | null>(null);
-  const rotating = useRef(null);
+  const rotating = useRef<HTMLImageElement | null>(null);
 
   useEffect(() => {
-    const ease = CustomEase.create("custom", "M0,0 C0.52,0.01 0.16,1 1,1 ");
-    rotateImageRef.current = gsap
-      .timeline({ defaults: { ease: "none" }, repeat: -1, paused: true })
-      .fromTo(
-        rotating.current,
-        {
-          rotation: 0,
-        },
-        {
-          rotation: -360,
-          duration: 3,
-          // ease,
-        },
-      );
+    rotateImageRef.current = gsap.timeline({ defaults: { ease: "none" }, repeat: -1, paused: true }).fromTo(
+      rotating.current,
+      {
+        rotation: 0,
+      },
+      {
+        rotation: -360,
+        duration: 3,
+      },
+    );
   }, []);
 
   return (
     <Magentic
       strength={50}
-      className="email_section1 anime isolate z-20  rounded-full !text-[clamp(16px,_1vw_+_14px,_24px)] md:bg-[#272727]"
+      className="email_section1 anime isolate z-20 rounded-full !text-[clamp(16px,_1vw_+_14px,_24px)] md:bg-secondary"
       onMouseEnter={() => rotateImageRef.current?.play()}
       onMouseLeave={() => rotateImageRef.current?.pause()}
       href="#second"
       scrambleParams={[
         {
-          text: "Check out",
+          text: HERO_TEXTS.BUTTON_CHECK_OUT,
           chars: "-x",
         },
         {
-          text: "Latest Work",
+          text: HERO_TEXTS.BUTTON_LATEST_WORK,
           chars: "-x",
         },
       ]}
@@ -49,21 +46,14 @@ export function HeroButton({}) {
         <div className="round hidden items-center justify-center md:flex">
           <p className="absolute left-[37%] whitespace-nowrap text-[21px]">
             <span>
-              <span className="scrambleText">Check out</span>
+              <span className="scrambleText">{HERO_TEXTS.BUTTON_CHECK_OUT}</span>
               <br />
-              <span className="scrambleText">Latest Work</span>
+              <span className="scrambleText">{HERO_TEXTS.BUTTON_LATEST_WORK}</span>
             </span>
           </p>
         </div>
-        <div className="round flex items-center  justify-end md:justify-center ">
-          <Image
-            className="rotateAnimation inline-block aspect-square border-2 border-white md:border-0 md:p-1"
-            ref={rotating}
-            width={120}
-            height={120}
-            src="/img/logo.png"
-            alt=""
-          />
+        <div className="round flex items-center justify-end md:justify-center">
+          <Image className="rotateAnimation inline-block aspect-square border-2 border-white md:border-0 md:p-1" ref={rotating} width={120} height={120} src="/img/logo.png" alt="" />
         </div>
       </div>
     </Magentic>

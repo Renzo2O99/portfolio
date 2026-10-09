@@ -1,31 +1,32 @@
-import React, { useEffect } from "react";
-import Image from "next/image";
 import gsap from "gsap";
 import CustomEase from "gsap/CustomEase";
+import { useEffect } from "react";
 
 gsap.registerPlugin(CustomEase);
 
-import { cn } from "@/shared/lib/utils";
+import FigmaIcon from "@/public/svg/figmaIcon.svg";
+import Framer from "@/public/svg/framer.svg";
+import GitIcon from "@/public/svg/gitIcon.svg";
 import NextIcon from "@/public/svg/nextjsIcon.svg";
-import TailwindIcon from "@/public/svg/tailwindIcon.svg";
-import TypescriptIcon from "@/public/svg/typescriptIcon.svg";
 import NodejsIcon from "@/public/svg/nodejsIcon.svg";
 import ReactIcon from "@/public/svg/reactIcon.svg";
-import FigmaIcon from "@/public/svg/figmaIcon.svg";
-import GitIcon from "@/public/svg/gitIcon.svg";
-import Framer from "@/public/svg/framer.svg";
+import TailwindIcon from "@/public/svg/tailwindIcon.svg";
+import TypescriptIcon from "@/public/svg/typescriptIcon.svg";
 import Webflow from "@/public/svg/webflow.svg";
+import { cn } from "@/shared";
 
-export function AboutMarquee({}) {
+export function AboutMarquee() {
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const el = document.querySelector(".rollingText3") as HTMLElement | null;
-      if (el) {
+      const el = document.querySelector(".rollingText3");
+      if (el instanceof HTMLElement) {
         gsap.set(`.rollingText3`, {
           left: `${el.offsetWidth}px`,
         });
       }
 
+      // NOTE: "custom" y el path M0,0,... son config de GSAP CustomEase,
+      // no copy UI. Excluidos en Lens 05 (ver lens-05-strings.mjs).
       gsap.fromTo(
         `.rollingText2`,
         {
@@ -56,10 +57,7 @@ export function AboutMarquee({}) {
     return () => ctx.revert();
   }, []);
   return (
-    <div
-      id="one"
-      className="anime mt-[2em] grow rounded-3xl bg-colorSecondaryHalfLight md:mt-[4em] md:rounded-[3rem]"
-    >
+    <div id="one" className="anime mt-[2em] grow rounded-3xl bg-colorSecondaryHalfLight md:mt-[4em] md:rounded-(--radius)">
       <div className="slider_wip">
         <InnerMarquee className="rollingText2" />
         <InnerMarquee className="rollingText3" />

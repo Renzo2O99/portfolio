@@ -1,0 +1,12 @@
+export const CONTACT_TEXTS = {
+  TITLE_CONTACT: "Contact",
+  LABEL_LOCAL_TIME: "LOCAL TIME",
+  LABEL_OPEN_SOURCE: "OPEN SOURCE",
+  LABEL_SOCIALS: "SOCIALS",
+  LABEL_VIEW_ON_GITHUB: "View on GitHub",
+  LABEL_EMAIL: "Email",
+  LABEL_TWITTER: "Twitter",
+  LABEL_TELEGRAM: "Telegram",
+  LABEL_GITHUB: "Github",
+  FILTER_BRIGHTNESS_85: "brightness(85%)",
+} as const;

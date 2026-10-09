@@ -1,99 +1,26 @@
-import { BgImage } from "./BgImage";
-import React, { useEffect, useRef } from "react";
-import Image from "next/image";
-import { memo } from "react";
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
+import { type MutableRefObject, useEffect, useRef, useState } from "react";
+import { getRandValues } from "@/shared";
+import { BgImage } from "./BgImage";
 
 gsap.registerPlugin(CustomEase);
 
-import { getRandRgb, getRandValues, shuffle } from "@/shared/lib/utils";
-
 const bgImagesData = [
-  {
-    id: 1,
-    imgLink: "/svg_logo/after-effects-logo.svg",
-    title: "",
-    subtitle: "",
-  },
-  {
-    id: 2,
-    imgLink: "/svg_logo/attributes-logo.svg",
-    title: "",
-    subtitle: "",
-  },
-  {
-    id: 3,
-    imgLink: "/svg_logo/client-first-logo.svg",
-    title: "",
-    subtitle: "",
-  },
-  {
-    id: 4,
-    imgLink: "/svg_logo/figma-logo.svg",
-    title: "",
-    subtitle: "",
-  },
-  {
-    id: 5,
-    imgLink: "/svg_logo/framer-logo.svg",
-    title: "",
-    subtitle: "",
-  },
-  {
-    id: 6,
-    imgLink: "/svg_logo/gsap-logo.svg",
-    title: "",
-    subtitle: "",
-  },
-  {
-    id: 7,
-    imgLink: "/svg_logo/mailchimp-logo.svg",
-    title: "",
-    subtitle: "",
-  },
-  {
-    id: 8,
-    imgLink: "/svg_logo/nextjs-logo.svg",
-    title: "",
-    subtitle: "",
-  },
-  {
-    id: 9,
-    imgLink: "/svg_logo/photoshop-logo.svg",
-    title: "",
-    subtitle: "",
-  },
-  {
-    id: 10,
-    imgLink: "/svg_logo/react-logo.svg",
-    title: "",
-    subtitle: "",
-  },
-  {
-    id: 11,
-    imgLink: "/svg_logo/spline-logo.svg",
-    title: "",
-    subtitle: "",
-  },
-  {
-    id: 12,
-    imgLink: "/svg_logo/rive-logo.svg",
-    title: "",
-    subtitle: "",
-  },
-  {
-    id: 13,
-    imgLink: "/svg_logo/typescript-logo.svg",
-    title: "",
-    subtitle: "",
-  },
-  {
-    id: 14,
-    imgLink: "/svg_logo/webflow-logo.svg",
-    title: "",
-    subtitle: "",
-  },
+  { id: 1, imgLink: "/svg_logo/after-effects-logo.svg", title: "", subtitle: "" },
+  { id: 2, imgLink: "/svg_logo/attributes-logo.svg", title: "", subtitle: "" },
+  { id: 3, imgLink: "/svg_logo/client-first-logo.svg", title: "", subtitle: "" },
+  { id: 4, imgLink: "/svg_logo/figma-logo.svg", title: "", subtitle: "" },
+  { id: 5, imgLink: "/svg_logo/framer-logo.svg", title: "", subtitle: "" },
+  { id: 6, imgLink: "/svg_logo/gsap-logo.svg", title: "", subtitle: "" },
+  { id: 7, imgLink: "/svg_logo/mailchimp-logo.svg", title: "", subtitle: "" },
+  { id: 8, imgLink: "/svg_logo/nextjs-logo.svg", title: "", subtitle: "" },
+  { id: 9, imgLink: "/svg_logo/photoshop-logo.svg", title: "", subtitle: "" },
+  { id: 10, imgLink: "/svg_logo/react-logo.svg", title: "", subtitle: "" },
+  { id: 11, imgLink: "/svg_logo/spline-logo.svg", title: "", subtitle: "" },
+  { id: 12, imgLink: "/svg_logo/rive-logo.svg", title: "", subtitle: "" },
+  { id: 13, imgLink: "/svg_logo/typescript-logo.svg", title: "", subtitle: "" },
+  { id: 14, imgLink: "/svg_logo/webflow-logo.svg", title: "", subtitle: "" },
 ];
 
 const mobilePositions = [
@@ -113,41 +40,22 @@ const mobilePositions = [
   { left: 50, top: 83, rotate: -4 },
 ];
 
-function getRandDistrubutedTop(index: number, targets: any[]) {
+function getRandDistrubutedTop(index: number, targets: { length: number }) {
   const mid = Math.floor(targets.length / 2);
-  if (index === 0) {
-    return 65;
-  }
-
-  if (index === targets.length - 1) {
-    return 35;
-  }
-
-  if (index === mid) {
-    return 50;
-  }
-
-  if (index < mid) {
-    return getRandValues(30, 60);
-  }
-  if (index > mid) {
-    return getRandValues(40, 70);
-  }
-
+  if (index === 0) return 65;
+  if (index === targets.length - 1) return 35;
+  if (index === mid) return 50;
+  if (index < mid) return getRandValues(30, 60);
+  if (index > mid) return getRandValues(40, 70);
   return getRandValues(30, 70);
 }
 
-export const BgImagesContainer = ({
-  bgImagesSharedRef,
-}: {
-  bgImagesSharedRef: React.MutableRefObject<gsap.core.Tween | null>;
-}) => {
-  const [shuffledImages, setShuffledImages] = React.useState(() => [...bgImagesData]);
+type BgImagesContainerProps = {
+  bgImagesSharedRef: MutableRefObject<gsap.core.Tween | null>;
+};
 
-  React.useEffect(() => {
-    setShuffledImages(prev => [...prev].sort(() => 0.5 - Math.random()));
-  }, []);
-
+export const BgImagesContainer = ({ bgImagesSharedRef }: BgImagesContainerProps) => {
+  const [shuffledImages] = useState(() => [...bgImagesData].sort(() => 0.5 - Math.random()));
   const bgImagesTween = useRef<gsap.core.Tween | null>(null);
   const GAP = 6;
 
@@ -157,25 +65,13 @@ export const BgImagesContainer = ({
     mm.add("(min-width: 768px)", () => {
       bgImagesTween.current = gsap.fromTo(
         ".bgImages",
-        {
-          y: "200%",
-          x: "0%",
-          left: "50%",
-          rotate: 0,
-          top: "50%",
-        },
+        { y: "200%", x: "0%", left: "50%", rotate: 0, top: "50%" },
         {
           y: "-50%",
           x: "0%",
-          left: function (index) {
-            return 90 + index * -GAP + "%";
-          },
-          top: function (index, target, targets) {
-            return getRandDistrubutedTop(index, targets) + "%";
-          },
-          rotate: function () {
-            return getRandValues(-30, 30);
-          },
+          left: (index) => `${90 + index * -GAP}%`,
+          top: (index, _, targets) => `${getRandDistrubutedTop(index, targets)}%`,
+          rotate: () => getRandValues(-30, 30),
           paused: true,
           delay: 0.8,
           stagger: 0.08,
@@ -188,28 +84,13 @@ export const BgImagesContainer = ({
     mm.add("(max-width: 767px)", () => {
       bgImagesTween.current = gsap.fromTo(
         ".bgImages",
-        {
-          y: "200%",
-          x: "0%",
-          left: "50%",
-          rotate: 0,
-          top: "50%",
-        },
+        { y: "200%", x: "0%", left: "50%", rotate: 0, top: "50%" },
         {
           y: "-50%",
           x: "0%",
-          left: function (index) {
-            const pos = mobilePositions[index % mobilePositions.length];
-            return pos.left + "%";
-          },
-          top: function (index) {
-            const pos = mobilePositions[index % mobilePositions.length];
-            return pos.top + "%";
-          },
-          rotate: function (index) {
-            const pos = mobilePositions[index % mobilePositions.length];
-            return pos.rotate;
-          },
+          left: (index) => `${mobilePositions[index % mobilePositions.length]?.left ?? 50}%`,
+          top: (index) => `${mobilePositions[index % mobilePositions.length]?.top ?? 50}%`,
+          rotate: (index) => mobilePositions[index % mobilePositions.length]?.rotate ?? 0,
           paused: true,
           delay: 0.8,
           stagger: 0.06,
@@ -221,10 +102,7 @@ export const BgImagesContainer = ({
 
     bgImagesSharedRef.current = gsap.fromTo(
       ".footer__img_wrapper",
-      {
-        minWidth: "100%",
-        minHeight: "100%",
-      },
+      { minWidth: "100%", minHeight: "100%" },
       {
         minWidth: "110%",
         minHeight: "150%",
@@ -244,7 +122,7 @@ export const BgImagesContainer = ({
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     const section = document.querySelector(".section__5");
@@ -261,9 +139,9 @@ export const BgImagesContainer = ({
   }, [bgImagesSharedRef]);
 
   return (
-    <div className="footer__img_wrapper bg-transparent-foreground  !absolute flex h-[100%] w-[100%] items-center justify-center overflow-hidden ">
+    <div className="footer__img_wrapper bg-transparent-foreground !absolute flex h-[100%] w-[100%] items-center justify-center overflow-hidden">
       {shuffledImages.map((item, i) => (
-        <BgImage key={item.id} total={bgImagesData.length} item={item} i={i} />
+        <BgImage key={item.id} total={bgImagesData.length} imageItem={item} i={i} />
       ))}
     </div>
   );

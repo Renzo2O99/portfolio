@@ -1,23 +1,23 @@
-import { Footer } from "../parts/Footer";
-import React, { useRef } from "react";
-import Magentic from "@/common/ui/parts/Magentic";
+import { useRef } from "react";
+import { Bulge, Header, Magentic } from "@/common";
+import { links } from "@/shared";
+import { CONTACT_TEXTS } from "../../lib/contact-texts.constants";
 import { BgImagesContainer } from "../parts/BgImagesContainer";
-import { Header } from "@/common/ui/parts/Header";
-import { Bulge } from "@/common/ui/parts/Bulge";
-import { links } from "@/shared/data/data";
-export function ContactSection({}) {
+import { Footer } from "../parts/Footer";
+
+export function ContactSection() {
   const bgImagesSharedRef = useRef<gsap.core.Tween | null>(null);
 
   return (
-    <section className="section section__5 third darkGradient ">
+    <section className="section section__5 third darkGradient">
       <Bulge type="Light" />
-      <Header color="Light"></Header>
+      <Header color="Light" />
 
-      <Magentic // href="mailto:email.coex@gmail.com"
+      <Magentic
         href={links.contact}
         className="footer__heading anime cursor-pointer"
         scrambleParams={{
-          text: "Contact",
+          text: CONTACT_TEXTS.TITLE_CONTACT,
         }}
         onMouseEnter={() => {
           bgImagesSharedRef.current?.play();
@@ -27,7 +27,7 @@ export function ContactSection({}) {
         }}
       >
         <span className="shapka mask">
-          <span className="scrambleText inline-block text-left">Contact</span>
+          <span className="scrambleText inline-block text-left">{CONTACT_TEXTS.TITLE_CONTACT}</span>
           <span className="yellow__it">.</span>
         </span>
       </Magentic>

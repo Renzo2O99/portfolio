@@ -1,2 +1,2 @@
-// Public server-side exports for hero module (if any)
+// NOTE: Exports de servidor para el módulo hero (si aplica)
 export {};

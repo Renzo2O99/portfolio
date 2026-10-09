@@ -1,2 +1,2 @@
-// Public server-side exports for work module
+// NOTE: Exports de servidor para el módulo work (si aplica)
 export {};

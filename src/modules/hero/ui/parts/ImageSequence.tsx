@@ -1,25 +1,19 @@
-import React, { use, useEffect } from "react";
 import { gsap } from "gsap";
+import { useEffect } from "react";
+import { HERO_TEXTS } from "../../lib/hero-texts.constants";
+import type { ImageSequenceProps } from "../../models/hero.types";
 
-export function ImageSequence({
-  sectionRef,
-}: {
-  sectionRef: React.RefObject<HTMLElement | null>;
-}) {
+export function ImageSequence({ sectionRef }: ImageSequenceProps) {
   useEffect(() => {
-    const canvas = document.getElementById(
-      "hero-lightpass",
-    ) as HTMLCanvasElement;
+    const element = document.getElementById("hero-lightpass");
+    if (!(element instanceof HTMLCanvasElement)) return;
+    const canvas = element;
     const context = canvas.getContext("2d");
-    // const frameCount = 147;
     const SOURCE_FRAME_COUNT = 120;
     const FRAME_COUNT = 24;
     const MID_FRAME = Math.floor(FRAME_COUNT / 2);
     const frameCount = FRAME_COUNT;
-    // const currentFrame = (index: number) =>
-    //   `https://www.apple.com/105/media/us/airpods-pro/2019/1299e2f5_9206_4470_b28e_08307a42f19b/anim/sequence/large/01-hero-lightpass/${(index + 1).toString().padStart(4, "0")}.jpg`;
-    const currentFrame = (index: number) =>
-      `/modal_seq/${index.toString().padStart(3, "0")}.avif`;
+    const currentFrame = (index: number) => `/modal_seq/${index.toString().padStart(3, "0")}.avif`;
 
     const images: HTMLImageElement[] = [];
     let isActive = true;
@@ -35,9 +29,7 @@ export function ImageSequence({
     }
 
     for (let i = 0; i < FRAME_COUNT; i++) {
-      const frameIndex = Math.round(
-        (i * (SOURCE_FRAME_COUNT - 1)) / (FRAME_COUNT - 1),
-      );
+      const frameIndex = Math.round((i * (SOURCE_FRAME_COUNT - 1)) / (FRAME_COUNT - 1));
       const img = new Image();
       img.src = currentFrame(frameIndex);
       images.push(img);
@@ -53,14 +45,20 @@ export function ImageSequence({
     if (!sectionRef.current) return;
 
     const idle = window.requestIdleCallback
-      ? (cb: IdleRequestCallback) => window.requestIdleCallback(cb)
-      : (cb: IdleRequestCallback) => window.setTimeout(() => cb({} as IdleDeadline), 1);
+      ? (callback: IdleRequestCallback) => window.requestIdleCallback(callback)
+      : (callback: IdleRequestCallback) => {
+          const fallbackDeadline: IdleDeadline = {
+            didTimeout: false,
+            timeRemaining: () => 0,
+          };
+          return window.setTimeout(() => callback(fallbackDeadline), 1);
+        };
 
     const mid = images[MID_FRAME];
     if (mid.complete) {
       idle(reveal);
     } else {
-      mid.addEventListener("load", () => idle(reveal));
+      mid.addEventListener(HERO_TEXTS.EVENT_LOAD, () => idle(reveal));
     }
 
     let rafId: number;
@@ -70,13 +68,7 @@ export function ImageSequence({
     const handleMouseMove = (event: MouseEvent) => {
       if (!sectionRef.current || !isActive) return;
       const mousePositionX = event.clientX;
-      const mappedX = gsap.utils.mapRange(
-        0,
-        sectionRef.current.offsetWidth,
-        1,
-        frameCount - 1,
-        mousePositionX,
-      );
+      const mappedX = gsap.utils.mapRange(0, sectionRef.current.offsetWidth, 1, frameCount - 1, mousePositionX);
       targetFrame = Math.round(mappedX);
     };
 
@@ -85,7 +77,7 @@ export function ImageSequence({
         frameTween?.kill();
         frameTween = gsap.to(airpods, {
           frame: targetFrame,
-          snap: "frame",
+          snap: HERO_TEXTS.SNAP_FRAME,
           ease: "none",
           duration: 0.2,
           overwrite: true,
@@ -113,7 +105,7 @@ export function ImageSequence({
     );
     visibility.observe(sectionElement);
 
-    sectionElement.addEventListener("mousemove", handleMouseMove, {
+    sectionElement.addEventListener(HERO_TEXTS.EVENT_MOUSEMOVE, handleMouseMove, {
       passive: true,
     });
     rafId = requestAnimationFrame(tick);
@@ -123,19 +115,13 @@ export function ImageSequence({
       frameTween?.kill();
       gsap.killTweensOf(airpods);
       visibility.disconnect();
-      sectionElement.removeEventListener("mousemove", handleMouseMove);
+      sectionElement.removeEventListener(HERO_TEXTS.EVENT_MOUSEMOVE, handleMouseMove);
     };
-  }, []);
+  }, [sectionRef]);
 
-  // const { isActive } = useAppSelector((state) => state.splineReducer);
   return (
     <div className="contrast-110 absolute left-0 top-0 z-10 flex h-full w-full items-center justify-center grayscale">
-      <canvas
-        width={512}
-        height={512}
-        id="hero-lightpass"
-        className="scale-[0.65] md:scale-[0.8] lg:scale-[1]"
-      ></canvas>
+      <canvas width={512} height={512} id="hero-lightpass" className="scale-[0.65] md:scale-[0.8] lg:scale-[1]" />
     </div>
   );
 }

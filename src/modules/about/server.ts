@@ -1,2 +1,2 @@
-// Public server-side exports for about module
+// NOTE: Exports de servidor para el módulo about (si aplica)
 export {};

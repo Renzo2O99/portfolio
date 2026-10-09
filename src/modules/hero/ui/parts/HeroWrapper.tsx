@@ -1,24 +1,23 @@
-import React from "react";
+import { HERO_TEXTS } from "../../lib/hero-texts.constants";
 import { HeroButton } from "./HeroButton";
 import { HeroMarquee } from "./HeroMarquee";
-export function HeroWrapper({}) {
+
+export function HeroWrapper() {
   return (
-    <main className="section1__wrapper relative max-w-maxWidth grow ">
-      <div className="myImage"></div>
+    <main className="section1__wrapper relative max-w-maxWidth grow">
+      <div className="myImage" />
       <HeroButton />
       <h2 className="left mask pointer-events-none z-20 pt-20">
-        <div className="free anime">
-          Freelance&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        </div>
-        <div className="animation__wrapper anime">
+        <div className="free anime">{HERO_TEXTS.LABEL_FREELANCE}</div>
+        <div className="animation__wrapper anime relative h-[1.2em] overflow-hidden">
           <span className="animate__this animate__this1 left-0">
-            Webflow Developer<span className="yellow__it">.</span>
-            <br />
+            {HERO_TEXTS.ROLE_WEBFLOW}
+            <span className="yellow__it">.</span>
           </span>
           <span className="animate__this animate__this2 left-0">
-            Next.js Developer<span className="yellow__it">.</span>
+            {HERO_TEXTS.ROLE_NEXTJS}
+            <span className="yellow__it">.</span>
           </span>
-          <span>&nbsp;</span>
         </div>
       </h2>
       <HeroMarquee />

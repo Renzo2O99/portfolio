@@ -1,131 +1,58 @@
 "use client";
 
-import React from "react";
+import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
-import Magentic from "@/common/ui/parts/Magentic";
-import { Header } from "@/common/ui/parts/Header";
-import { Bulge } from "@/common/ui/parts/Bulge";
+import { Bulge, Header, Magentic } from "@/common";
+import { cn } from "@/shared";
+import { WORK_TEXTS } from "../../lib/work-texts.constants";
+import type { WorkProject } from "../../models/work.types";
 
-export function WorkPageSection({
-  index,
-  item,
-  color,
-  length,
-}: {
+type WorkPageSectionProps = {
   index: number;
-  item: {
-    title: React.JSX.Element;
-    description: string | React.JSX.Element;
-    link: string;
-    imageLink: string;
-  };
+  project: WorkProject;
   color: "Dark" | "Light";
-  length: number;
-}) {
+};
+
+export function WorkPageSection({ index, project, color }: WorkPageSectionProps) {
   return (
-    <div
-      className={`section s${index} ${
-        color == "Dark" ? "lightGradient" : "darkGradient"
-      }
-      text-color${color} `}
-      key={item.link}
-    >
-      <Header color={color}></Header>
+    <div className={cn(WORK_TEXTS.CLASS_SECTION, `s${index}`, color === "Dark" ? "lightGradient text-colorDark" : "darkGradient text-colorLight")} key={project.link}>
+      <Header color={color} />
       <Bulge type={color} />
 
-      <div className="flex h-[100dvh] w-full items-center px-paddingX">
-        <div
-          className={`fullpage__slide mx-auto max-w-maxWidth
-          `}
-        >
-          <a
-            className={`image image--works image--works${
-              index + 1
-            } anime relative block rounded-3xl `}
-            target="_blank"
-            href={item.link}
-          >
-            <Image
-              src={item.imageLink}
-              alt=""
-              fill
-              sizes="(max-width: 640px) 90vw, (max-width: 1024px) 70vw, 800px"
-              loading={index === 0 ? "eager" : "lazy"}
-              priority={index === 0}
-              className="object-contain"
-            />
+      <div className="flex h-[100dvh] w-full items-center px-paddingX pb-28 md:pb-0">
+        <div className="fullpage__slide mx-auto max-w-maxWidth">
+          <a className={cn("image image--works", `image--works${index + 1}`, "anime relative block rounded-3xl")} target="_blank" rel="noreferrer" href={project.link}>
+            <Image src={project.imageLink} alt="" fill sizes="(max-width: 640px) 90vw, (max-width: 1024px) 70vw, 800px" loading={index === 0 ? "eager" : "lazy"} priority={index === 0} className="object-contain" />
             <div className="image__over">
               <div className="image__cover">1</div>
               <div className="image__cover">2</div>
             </div>
-            <div className="page-num absolute anime ">
-              <div className="mask absolute left-0 top-0 -z-10 h-full w-full rounded-2xl bg-colorSecondaryDark"></div>
-              <p className="p-8 text-colorLight ">0{index + 1}</p>
+            <div className="page-num absolute anime">
+              <div className="mask absolute left-0 top-0 -z-10 h-full w-full rounded-2xl bg-colorSecondaryDark" />
+              <p className="p-8 text-colorLight">0{index + 1}</p>
             </div>
           </a>
-          <div className="title ">
+          <div className="title">
             <h2 className="title__text js-letter anime mask font-bold tracking-tight">
-              {item.title}
+              {project.title}
               <br />
             </h2>
             <div className="js-letter anime borderv">
-              <span className={`bg-colorSecondary${color}`}></span>
-              <span className={`bg-colorSecondary${color}`}></span>
+              <span className={color === "Dark" ? "bg-colorSecondaryDark" : "bg-colorSecondaryLight"} />
+              <span className={color === "Dark" ? "bg-colorSecondaryDark" : "bg-colorSecondaryLight"} />
             </div>
-            <p className="title__lead js-letter anime ">{item.description}</p>
+            <p className="title__lead js-letter anime">{project.description}</p>
             <div className="btn-wrap js-letter anime">
-              <Magentic
-                strength={50}
-                className={`btn text-color${
-                  color === "Dark" ? "Light" : "Dark"
-                } bg-color${color} mask`}
-                href={item.link}
-                target="_blank"
-                scrambleParams={{ text: "Show Me", chars: "-x" }}
-              >
+              <Magentic strength={35} className={cn("btn rounded-full", color === "Dark" ? "bg-colorDark text-colorLight" : "bg-colorLight text-colorDark")} href={project.link} target="_blank" scrambleParams={{ text: WORK_TEXTS.BUTTON_SHOW_ME, chars: "-x" }}>
                 <p className="shapka">
-                  <span className="scrambleText">Show Me</span>
-                  <svg
-                    className="ml-4 inline w-[0.8em] -rotate-[75deg] text-inherit" // width="34px"
-                    // height="34px"
-                    viewBox="0 0 14 14"
-                    version="1.1"
-                    xmlns="http://www.w3.org/2000/svg" // xmlns:xlink="http://www.w3.org/1999/xlink"
-                  >
-                    <title>arrow-up-right</title>
-                    <g
-                      id="Page-1"
-                      stroke="none"
-                      strokeWidth="2"
-                      fill="none"
-                      fillRule="evenodd"
-                    >
-                      <g
-                        id="Artboard"
-                        transform="translate(-1019.000000, -279.000000)"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <g
-                          id="arrow-up-right"
-                          transform="translate(1026.000000, 286.000000) rotate(90.000000) translate(-1026.000000, -286.000000) translate(1020.000000, 280.000000)"
-                        >
-                          <polyline
-                            id="Path"
-                            points="2.76923077 0 12 0 12 9.23076923"
-                          ></polyline>
-                          <line x1="12" y1="0" x2="0" y2="12" id="Path"></line>
-                        </g>
-                      </g>
-                    </g>
-                  </svg>
+                  <span className="scrambleText">{WORK_TEXTS.BUTTON_SHOW_ME}</span>
+                  <ArrowUpRight className="ml-2 inline h-[1.1em] w-[1.1em] text-inherit" aria-hidden="true" />
                 </p>
               </Magentic>
             </div>
           </div>
         </div>
       </div>
-
-      </div>
+    </div>
   );
 }

@@ -1,15 +1,15 @@
 "use client";
 
-import { cn } from "@/shared/lib/utils";
-import { useFullpageNav } from "@/shared/hooks/fullpageNavContext";
+import { Button } from "@/common";
+import { cn, useFullpageNav } from "@/shared";
+import { WORK_TEXTS } from "../../lib/work-texts.constants";
 
-export function WorkNav({
-  total,
-  active,
-}: {
+type WorkNavProps = {
   total: number;
   active: number;
-}) {
+};
+
+export function WorkNav({ total, active }: WorkNavProps) {
   const nav = useFullpageNav();
   const goTo = nav?.goTo ?? (() => {});
 
@@ -26,94 +26,39 @@ export function WorkNav({
     goTo(active + 1);
   };
 
-  const baseBtn =
-    "pointer-events-auto flex h-12 w-12 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-colorDark";
+  const baseBtn = "pointer-events-auto flex h-12 w-12 cursor-pointer items-center justify-center rounded-full p-0 transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-colorDark";
 
   return (
-    <nav
-      aria-label="Navegación de proyectos"
-      className="pointer-events-none absolute inset-x-0 bottom-6 z-[500] flex items-end justify-center gap-1 sm:gap-2"
-    >
-      <button
-        type="button"
-        aria-label="Proyecto anterior"
-        onClick={handlePrev}
-        disabled={isFirst}
-        className={cn(
-          baseBtn,
-          isFirst
-            ? "pointer-events-none cursor-not-allowed bg-colorSecondaryDark/40 opacity-40"
-            : "pointer-events-auto bg-colorSecondaryDark hover:bg-colorDark",
-        )}
-      >
-        <svg
-          aria-hidden="true"
-          className="h-4 w-4 text-colorDark"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
+    <nav aria-label={WORK_TEXTS.NAV_MAIN_LABEL} className="pointer-events-none absolute inset-x-0 bottom-6 z-[500] flex items-end justify-center gap-1 sm:gap-2">
+      <Button type="button" variant="ghost" size="icon" aria-label={WORK_TEXTS.NAV_PREV_LABEL} onClick={handlePrev} disabled={isFirst} className={cn(baseBtn, isFirst ? "pointer-events-none cursor-not-allowed bg-colorSecondaryDark/40 opacity-40" : "pointer-events-auto bg-colorSecondaryDark hover:bg-colorDark")}>
+        <svg aria-hidden="true" className="h-4 w-4 text-colorDark" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="15 18 9 12 15 6" />
         </svg>
-      </button>
+      </Button>
 
       {Array.from({ length: total }, (_, i) => {
         const isActive = i === active;
 
         return (
-          <button
+          <Button
             key={i}
             type="button"
-            aria-label={`Ir al proyecto ${i + 1}`}
+            variant="ghost"
+            aria-label={`${WORK_TEXTS.NAV_PROJECT_GOTO_PREFIX} ${i + 1}`}
             aria-current={isActive ? "true" : undefined}
             onClick={() => goTo(i)}
-            className={cn(
-              "group pointer-events-auto h-12 w-8 cursor-pointer sm:h-14 sm:w-12 lg:w-16",
-              "rounded-full focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-colorDark",
-            )}
+            className={cn("group pointer-events-auto h-12 w-8 cursor-pointer p-0 sm:h-14 sm:w-12 lg:w-16", "rounded-(--radius) hover:bg-transparent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-colorDark")}
           >
-            <span
-              aria-hidden="true"
-              className={cn(
-                "mx-auto block rounded-full transition-[height,opacity] duration-300",
-                "bg-colorSecondaryDark group-hover:bg-colorDark",
-                isActive
-                  ? "h-12 w-1 opacity-100 sm:h-14 sm:w-1.5"
-                  : "h-5 w-1 opacity-50 group-hover:opacity-100 sm:h-6 sm:w-1.5",
-              )}
-            />
-          </button>
+            <span aria-hidden="true" className={cn("mx-auto block rounded-(--radius) transition-[height,opacity] duration-300", "bg-colorSecondaryDark group-hover:bg-colorDark", isActive ? "h-12 w-1 opacity-100 sm:h-14 sm:w-1.5" : "h-5 w-1 opacity-50 group-hover:opacity-100 sm:h-6 sm:w-1.5")} />
+          </Button>
         );
       })}
 
-      <button
-        type="button"
-        aria-label="Siguiente proyecto"
-        onClick={handleNext}
-        disabled={isLast}
-        className={cn(
-          baseBtn,
-          isLast
-            ? "pointer-events-none cursor-not-allowed bg-colorSecondaryDark/40 opacity-40"
-            : "pointer-events-auto bg-colorSecondaryDark hover:bg-colorDark",
-        )}
-      >
-        <svg
-          aria-hidden="true"
-          className="h-4 w-4 text-colorDark"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
+      <Button type="button" variant="ghost" size="icon" aria-label={WORK_TEXTS.NAV_NEXT_LABEL} onClick={handleNext} disabled={isLast} className={cn(baseBtn, isLast ? "pointer-events-none cursor-not-allowed bg-colorSecondaryDark/40 opacity-40" : "pointer-events-auto bg-colorSecondaryDark hover:bg-colorDark")}>
+        <svg aria-hidden="true" className="h-4 w-4 text-colorDark" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="9 18 15 12 9 6" />
         </svg>
-      </button>
+      </Button>
     </nav>
   );
 }
