@@ -164,5 +164,48 @@ export default function lens12(modName) {
     }
   }
 
+  // Detección de Props de componente tipadas inline ({ ... }: { ... }) en vez de type <Name>Props
+  for (const f of files) {
+    const content = readFileSafe(f);
+    const relPath = getRelativePath(f);
+    if (!relPath.endsWith(".tsx")) continue;
+    if (content.includes("EXCEPTION: inline-props")) continue;
+
+    const lines = content.split("\n");
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const lineNum = i + 1;
+      const trimmed = line.trim();
+      if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
+
+      const fnComponentMatch = line.match(/(?:export\s+(?:default\s+)?)?(?:function\s+([A-Z]\w*)|(?:const|let)\s+([A-Z]\w*)\s*=\s*(?:React\.)?(?:memo|forwardRef)?\(?(?:async\s*)?)\s*\(\s*(?:\{[^}]*\}|\w+)\s*:\s*\{/);
+      if (fnComponentMatch) {
+        const compName = fnComponentMatch[1] || fnComponentMatch[2];
+        violations.push({
+          lens: "12",
+          severity: "🟠",
+          file: `${relPath}:${lineNum}`,
+          msg: `Props del componente "${compName}" tipadas inline con objeto anónimo. Definir "type ${compName}Props = { ... }" nombrado`,
+        });
+      }
+    }
+
+    const fullTextMatches = content.matchAll(/(?:export\s+(?:default\s+)?)?(?:function\s+([A-Z]\w*)|(?:const|let)\s+([A-Z]\w*)\s*=\s*(?:React\.)?(?:memo|forwardRef)?\(?(?:async\s*)?)\s*\(\s*\{[\s\S]*?\}\s*:\s*\{/g);
+    for (const match of fullTextMatches) {
+      const compName = match[1] || match[2];
+      const matchIndex = match.index;
+      const lineNum = content.slice(0, matchIndex).split("\n").length;
+      const alreadyReported = violations.some((v) => v.file === `${relPath}:${lineNum}` && v.msg.includes(compName));
+      if (!alreadyReported) {
+        violations.push({
+          lens: "12",
+          severity: "🟠",
+          file: `${relPath}:${lineNum}`,
+          msg: `Props del componente "${compName}" tipadas inline con objeto anónimo. Definir "type ${compName}Props = { ... }" nombrado`,
+        });
+      }
+    }
+  }
+
   return violations;
 }

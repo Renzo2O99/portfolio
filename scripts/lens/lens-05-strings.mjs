@@ -1,3 +1,8 @@
+// NOTE: lens-05-strings.mjs — Audita strings hardcodeados y recomienda centralización en *-texts.constants.ts.
+// NOTE: Exclusiones (no son copy UI): hex de tema (los audita Lens 22), selector DOM "body",
+// NOTE: config de GSAP CustomEase ("custom", paths M0,0,...). Ver ABOUT_TEXTS (solo textos visibles).
+// NOTE: Doc alineada en .opencode/lenses/05-string-audit.md §6.
+
 import { join } from "node:path";
 import { getModDir, MODULES_DIR, findFiles, readFileSafe, getRelativePath, getModules, isLibrary, getModuleOverride } from "./shared.mjs";
 
@@ -151,6 +156,17 @@ function lens05UIStrings(modName) {
       if (str.includes("<") || str.includes(">")) continue;
       if (str.includes("/") || str.includes("\n") || str.includes("//") || str.includes("/*")) continue;
       if (/^\.[a-z0-9]{2,5}$/i.test(str)) continue;
+      // NOTE: hex de tema (#fff, #0e0d0c...) — pertenecen a Lens 22 (color-tokens),
+      // no a Lens 05. Centralizarlos en *-texts.constants.ts confundiría
+      // valores CSS con copy UI (ver ABOUT_TEXTS: solo textos visibles).
+      if (/^#[0-9a-fA-F]{3,8}$/.test(str.trim())) continue;
+      // NOTE: selector DOM "body" (gsap.to("body", ...)) — no es texto visible,
+      // es un target de animación. No centralizar.
+      if (str.trim() === "body") continue;
+      // NOTE: config de GSAP CustomEase — el nombre del ease ("custom") y su
+      // path ("M0,0,C0,0,1,1,1,1") son API de la librería, no copy traducible.
+      if (str.trim() === "custom") continue;
+      if (/^M\d[\d,.\sC]*$/.test(str.trim())) continue;
       if (!isSpanishText(str)) continue;
       // Tokens enum/técnicos (shape, sidebar state, html attributes) — no son UI traducible
       if (NON_UI_WORDS.has(str.toLowerCase())) continue;

@@ -32,7 +32,7 @@ import lens29 from "./lens-29-component-purity.mjs";
 import lens30 from "./lens-30-motion-props.mjs";
 import { lens31ErrorBoundariesGlobal } from "./lens-31-error-boundaries.mjs";
 import { lens32NoPermanentExceptionGlobal } from "./lens-32-no-permanent-exception.mjs";
-import lens33 from "./lens-33-imports-top.mjs";
+import lens33, { lens33ImportsGlobal } from "./lens-33-imports.mjs";
 import lens34 from "./lens-34-inline-object-cast.mjs";
 import { lens35CacheHydrationGlobal } from "./lens-35-cache-hydration.mjs";
 import { getModules, isLibrary, getModuleOverride } from "./shared.mjs";
@@ -108,6 +108,7 @@ function main() {
   const errorBoundariesViolations = lens31ErrorBoundariesGlobal();
   const noPermanentExceptionViolations = lens32NoPermanentExceptionGlobal();
   const cacheHydrationViolations = lens35CacheHydrationGlobal();
+  const importsViolations = lens33ImportsGlobal();
 
   for (const mod of modules) {
     const isLib = isLibrary(mod);
@@ -154,6 +155,7 @@ function main() {
       ...filterByModule(errorBoundariesViolations, mod, isLib),
       ...filterByModule(noPermanentExceptionViolations, mod, isLib),
       ...filterByModule(cacheHydrationViolations, mod, isLib),
+      ...filterByModule(importsViolations, mod, isLib),
     ].filter((v) => !isLib || LIBRARY_APPLICABLE_LENSES.has(v.lens)).filter((v) => getModuleOverride(mod, v.lens) !== true);
 
     printReport(mod, violations);
@@ -176,6 +178,7 @@ function main() {
     ...errorBoundariesViolations,
     ...noPermanentExceptionViolations,
     ...cacheHydrationViolations,
+    ...importsViolations,
   ];
   const unassigned = allGlobalViolations.filter(
     (v) => !modules.some((mod) => filterByModule([v], mod, isLibrary(mod)).length > 0)
