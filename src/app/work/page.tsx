@@ -1,12 +1,11 @@
 "use client";
-import React, { useState } from "react";
+
+import { useState } from "react";
 import "../work.css";
 import "../header.css";
-import FullpageProviderWork from "@/shared/hooks/FullpageProviderWork";
-import { Cursor } from "@/common/ui/parts/Cursor";
-import { HeaderNavigation } from "@/common/ui/parts/HeaderNavigation";
-import { WorkPageSection } from "@/modules/work";
-import { WorkNav } from "@/modules/work";
+import { Cursor, HeaderNavigation } from "@/common";
+import { WorkNav, WorkPageSection } from "@/modules/work";
+import { FullpageProviderWork } from "@/shared";
 
 const projectsData = [
   {
@@ -49,7 +48,6 @@ const projectsData = [
     link: "https://ponkecoin-ninetyeight.webflow.io/",
     imageLink: "/img/projects/4.avif",
   },
-
   {
     title: (
       <>
@@ -71,7 +69,7 @@ const projectsData = [
     imageLink: "/img/projects/6.avif",
   },
 ];
-//test
+
 export default function WorkPage() {
   const [active, setActive] = useState(0);
 
@@ -84,19 +82,10 @@ export default function WorkPage() {
         <br />
         PROJECTS
       </div>
-      <FullpageProviderWork
-        onSectionChange={setActive}
-        overlay={<WorkNav total={projectsData.length} active={active} />}
-      >
+      <FullpageProviderWork onSectionChange={setActive} overlay={<WorkNav total={projectsData.length} active={active} />}>
         <div id="fullpage">
-          {projectsData.map((item, index) => (
-            <WorkPageSection
-              key={index}
-              item={item}
-              index={index}
-              length={projectsData.length}
-              color={index % 2 !== 0 ? "Light" : "Dark"}
-            />
+          {projectsData.map((project, index) => (
+            <WorkPageSection key={index} project={project} index={index} color={index % 2 !== 0 ? "Light" : "Dark"} />
           ))}
         </div>
       </FullpageProviderWork>

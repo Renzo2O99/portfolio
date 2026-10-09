@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FullpageNavContext } from "@/shared/hooks/fullpageNavContext";
 
 gsap.registerPlugin(CustomEase);
@@ -10,15 +10,7 @@ gsap.registerPlugin(CustomEase);
 const WHEEL_THRESHOLD = 40;
 const TOUCH_THRESHOLD = 50;
 
-const FullpageProviderWork = ({
-  children,
-  overlay,
-  onSectionChange,
-}: {
-  children: React.ReactNode;
-  overlay?: React.ReactNode;
-  onSectionChange?: (index: number) => void;
-}) => {
+const FullpageProviderWork = ({ children, overlay, onSectionChange }: { children: ReactNode; overlay?: ReactNode; onSectionChange?: (index: number) => void }) => {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const navigateRef = useRef<(index: number) => void>(() => {});
   const onSectionChangeRef = useRef(onSectionChange);
@@ -29,29 +21,21 @@ const FullpageProviderWork = ({
   const currentRef = useRef(0);
   const lockedRef = useRef(false);
   const sectionsRef = useRef<HTMLElement[]>([]);
-  let wheelAccum = 0;
+  const wheelAccumRef = useRef(0);
 
   const navigateTo = useCallback((index: number) => {
     navigateRef.current(index);
   }, []);
 
-  const ease = useMemo(
-    () => CustomEase.create("custom", "M0,0 C0.52,0.01 0.16,1 1,1 "),
-    [],
-  );
+  const ease = useMemo(() => CustomEase.create("custom", "M0,0 C0.52,0.01 0.16,1 1,1 "), []);
 
-  const scrollEase = useMemo(
-    () => CustomEase.create("fullpage", "M0,0 C0.70,0 0.30,1 1,1"),
-    [],
-  );
+  const scrollEase = useMemo(() => CustomEase.create("fullpage", "M0,0 C0.70,0 0.30,1 1,1"), []);
 
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
 
-    const sections = Array.from(
-      track.querySelectorAll<HTMLElement>(".section"),
-    );
+    const sections = Array.from(track.querySelectorAll<HTMLElement>(".section"));
     if (sections.length === 0) return;
 
     sectionsRef.current = sections;
@@ -65,29 +49,13 @@ const FullpageProviderWork = ({
       const flex = window.innerWidth > 540 ? 17 : 5;
 
       if (direction === "down") {
-        gsap.fromTo(
-          `${target} .anime`,
-          { y: "30vh" },
-          { y: "0vh", duration: 1.1, stagger: 0.03, ease },
-        );
+        gsap.fromTo(`${target} .anime`, { y: "30vh" }, { y: "0vh", duration: 1.1, stagger: 0.03, ease });
 
-        gsap.fromTo(
-          `${target} .rounded__div__down`,
-          { height: `${flex}vh` },
-          { height: "0vh", duration: 1.2, ease },
-        );
+        gsap.fromTo(`${target} .rounded__div__down`, { height: `${flex}vh` }, { height: "0vh", duration: 1.2, ease });
       } else {
-        gsap.fromTo(
-          `${target} .anime`,
-          { y: "-30vh" },
-          { y: "0vh", duration: 1.1, stagger: -0.03, ease },
-        );
+        gsap.fromTo(`${target} .anime`, { y: "-30vh" }, { y: "0vh", duration: 1.1, stagger: -0.03, ease });
 
-        gsap.fromTo(
-          `${target} .rounded__div__up`,
-          { height: `${flex}vh` },
-          { height: "0vh", duration: 1.2, ease },
-        );
+        gsap.fromTo(`${target} .rounded__div__up`, { height: `${flex}vh` }, { height: "0vh", duration: 1.2, ease });
       }
     };
 
@@ -109,7 +77,10 @@ const FullpageProviderWork = ({
           onSectionChangeRef.current?.(next);
         },
         onComplete: () => {
-          lockedRef.current = false;
+          setTimeout(() => {
+            lockedRef.current = false;
+            wheelAccumRef.current = 0;
+          }, 600);
         },
       });
     };
@@ -126,14 +97,14 @@ const FullpageProviderWork = ({
       event.preventDefault();
       if (lockedRef.current) return;
 
-      wheelAccum += event.deltaY;
-      if (Math.abs(wheelAccum) < WHEEL_THRESHOLD) return;
+      wheelAccumRef.current += event.deltaY;
+      if (Math.abs(wheelAccumRef.current) < WHEEL_THRESHOLD) return;
 
       const activeIndex = currentRef.current;
-      if (wheelAccum > 0) goTo(activeIndex + 1, "down");
+      if (wheelAccumRef.current > 0) goTo(activeIndex + 1, "down");
       else goTo(activeIndex - 1, "up");
 
-      wheelAccum = 0;
+      wheelAccumRef.current = 0;
     };
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -189,9 +160,7 @@ const FullpageProviderWork = ({
   }, [ease, scrollEase]);
 
   return (
-    <FullpageNavContext.Provider
-      value={{ goTo: navigateTo, currentIndex: current, total: totalSections }}
-    >
+    <FullpageNavContext.Provider value={{ goTo: navigateTo, currentIndex: current, total: totalSections }}>
       <div className="sections-root">
         <div className="sections-track" ref={trackRef}>
           {children}

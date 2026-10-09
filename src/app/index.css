@@ -115,7 +115,7 @@ ul {
 .home__starteranimation .animation__container {
   max-width: 850px;
   width: 100%;
-  aspect-ratio: 1/1;
+  aspect-ratio: 1 / 1;
   /* background-color: var(--colorDark); */
   position: absolute;
   left: 50%;
@@ -127,19 +127,8 @@ ul {
 
 .home__starteranimation .animation__container.not {
   max-width: 850px;
-  aspect-ratio: 1/1;
-  clip-path: polygon(
-    0% 0%,
-    0% 100%,
-    35% 100%,
-    35% 41%,
-    65% 41%,
-    65% 58%,
-    35% 58%,
-    35% 100%,
-    100% 100%,
-    100% 0%
-  );
+  aspect-ratio: 1 / 1;
+  clip-path: polygon(0% 0%, 0% 100%, 35% 100%, 35% 41%, 65% 41%, 65% 58%, 35% 58%, 35% 100%, 100% 100%, 100% 0%);
 }
 
 .yellow__it {
@@ -182,9 +171,6 @@ ul {
 .hire-me--wrapper {
   width: 200px;
   height: 200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   display: none !important;
 }
 
@@ -231,13 +217,7 @@ textPath {
   bottom: 5%;
   /* width: 100vw; */
 
-  --mask: linear-gradient(
-    90deg,
-    hsla(0, 0%, 0%, 0) 15%,
-    hsl(0, 0%, 100%) 25%,
-    hsl(0, 0%, 100%) 75%,
-    hsla(0, 0%, 0%, 0) 85%
-  );
+  --mask: linear-gradient(90deg, hsla(0, 0%, 0%, 0) 15%, hsl(0, 0%, 100%) 25%, hsl(0, 0%, 100%) 75%, hsla(0, 0%, 0%, 0) 85%);
 
   -webkit-mask-image: var(--mask);
   mask-image: var(--mask);
@@ -353,16 +333,13 @@ textPath {
   }
 }
 
-@media only screen and (max-width: 425px) {
-}
-
 .section__2__separater::before {
   color: red;
   display: block;
   content: "";
   background-image: url(/svg/arrow2.svg);
   background-size: cover;
-  aspect-ratio: 1/1;
+  aspect-ratio: 1 / 1;
   right: 0;
   rotate: 90deg;
   width: 30px;
@@ -506,7 +483,7 @@ textPath {
   font-size: var(--fontSmall);
   white-space: nowrap;
   font-weight: bold;
-  aspect-ratio: 1/1;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -598,7 +575,7 @@ textPath {
   font-weight: 600;
   color: var(--colorLight);
   background-color: var(--colorDark);
-  aspect-ratio: 1/1;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -675,9 +652,6 @@ textPath {
   }
 }
 
-@media only screen and (max-width: 425px) {
-}
-
 .slider-inner {
   /* width: max-content; */
   position: absolute;
@@ -736,7 +710,7 @@ textPath {
 }
 .g-7 {
   height: 100%;
-  aspect-ratio: 1/1;
+  aspect-ratio: 1 / 1;
   display: flex;
   flex-direction: column;
   /* margin-inline: 100px; */
@@ -751,7 +725,7 @@ textPath {
   /* border-radius: 8px; */
   overflow: hidden;
   height: 100%;
-  aspect-ratio: 1/1;
+  aspect-ratio: 1 / 1;
   width: 100%;
   justify-content: center;
   align-items: center;
@@ -791,7 +765,4 @@ a {
     max-height: 20vh;
     /* height: 27vh; */
   }
-}
-
-@media only screen and (max-width: 425px) {
 }

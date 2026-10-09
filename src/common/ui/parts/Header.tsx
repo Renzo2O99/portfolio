@@ -1,17 +1,15 @@
-import React, { use, useEffect, useRef, useState } from "react";
-import Magentic from "./Magentic";
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
-import Logo from "@/public/svg/Logo.svg";
+import { useEffect, useRef } from "react";
+import { links } from "@/shared/data/data";
+import { useMenu } from "@/shared/hooks/menuContext";
+import { cn } from "@/shared/lib/utils";
+import Magentic from "./Magentic";
+import "@/app/header.css";
 
 gsap.registerPlugin(CustomEase);
 
 const ease = CustomEase.create("custom", "M0,0 C0.52,0.01 0.16,1 1,1 ");
-
-import { useMenu } from "@/shared/hooks/menuContext";
-import { cn } from "@/shared/lib/utils";
-import { links } from "@/shared/data/data";
-import "@/app/header.css";
 
 type HeaderProps = {
   color: "Dark" | "Light";
@@ -20,14 +18,9 @@ type HeaderProps = {
 };
 
 export function Header({ color, className, mode = "hamburger" }: HeaderProps) {
-  const possibleTailwindClasses = [
-    "bg-colorDark",
-    "bg-colorLight",
-    "text-colorDark",
-    "text-colorLight",
-    "before:bg-colorDark",
-    "before:bg-colorLight",
-  ];
+  // NOTE: Safelist para Tailwind (las clases se construyen dinámicas como `before:bg-color${color}` y el scanner no las detecta).
+  const possibleTailwindClasses = ["bg-colorDark", "bg-colorLight", "text-colorDark", "text-colorLight", "before:bg-colorDark", "before:bg-colorLight"];
+  void possibleTailwindClasses;
 
   const logoAnimationTl = useRef<gsap.core.Timeline | null>(null);
 
@@ -54,7 +47,7 @@ export function Header({ color, className, mode = "hamburger" }: HeaderProps) {
   const { toggleMenu } = useMenu();
 
   return (
-      <header className={cn("nav__container anime px-paddingX", className)}>
+    <header className={cn("nav__container anime px-paddingX", className)}>
       <nav className="nav__bar ">
         <div className="max-w-maxWidth">
           <Magentic
@@ -62,7 +55,6 @@ export function Header({ color, className, mode = "hamburger" }: HeaderProps) {
             strength={50}
             className={`nav__item text-xl font-bold text-color${color} before:bg-color${color}`}
             onMouseEnter={() => {
-              
               logoAnimationTl.current?.play();
             }}
             onMouseLeave={() => {
@@ -70,12 +62,7 @@ export function Header({ color, className, mode = "hamburger" }: HeaderProps) {
             }}
           >
             <p className="mask logo__anim flex items-center justify-center font-semibold   ">
-              <svg
-                className="w-[72px]"
-                viewBox="0 0 210 88"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+              <svg className="w-[72px]" viewBox="0 0 210 88" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                   className="logo__rotate"
                   d="M160.322 54.5405L193.518 21.9177M172.122 64.5597L204.081 32.6612M159.658 52.8806L194.635 51.764V57.8902H201.757M206.567 43.7064C206.567 57.0796 195.726 67.9208 182.352 67.9208C168.979 67.9208 158.138 57.0796 158.138 43.7064C158.138 30.3332 168.979 19.4921 182.352 19.4921C195.726 19.4921 206.567 30.3332 206.567 43.7064Z"
@@ -101,21 +88,16 @@ export function Header({ color, className, mode = "hamburger" }: HeaderProps) {
             }}
           >
             <div
-              className={cn(
-                "relative flex h-[1.1rem] w-full flex-col justify-between items-center",
-                {
-                  "scale-[.90] justify-center": mode === "cross",
-                },
-              )}
+              className={cn("relative flex h-[1.1rem] w-full flex-col justify-between items-center", {
+                "scale-[.90] justify-center": mode === "cross",
+              })}
             >
               <div
                 className={cn(`h-[0.15rem] w-full bg-color${color} transition-all duration-300`, {
                   "absolute rotate-45": mode === "cross",
                 })}
               />
-              {mode !== "cross" && (
-                <div className={`h-[0.15rem] w-full bg-color${color}`} />
-              )}
+              {mode !== "cross" && <div className={`h-[0.15rem] w-full bg-color${color}`} />}
               <div
                 className={cn(`h-[0.15rem] w-full bg-color${color} transition-all duration-300`, {
                   "absolute -rotate-45": mode === "cross",

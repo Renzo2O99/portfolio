@@ -1,15 +1,13 @@
-import React from "react";
-
 type bulgeProps = {
   type: "Dark" | "Light";
 };
 
-// Bulge is responsible for giving paralax effect when slide up and down
+// NOTE: Bulge renders the rounded slide-transition divs (parallax effect on slide change).
 
 export function Bulge({ type }: bulgeProps) {
   return (
     <>
-      {type == "Dark" ? (
+      {type === "Dark" ? (
         <>
           <div className="rounded__div__down darkGradient">
             <div className="round__bg__down lightGradient"></div>

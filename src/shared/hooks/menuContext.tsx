@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, type ReactNode, useContext, useState } from "react";
 
 type MenuState = {
   isMenuOpen: boolean;
@@ -17,7 +17,7 @@ const MenuContext = createContext<MenuContextValue>({
   toggleMenu: () => {},
 });
 
-export function MenuProvider({ children }: { children: React.ReactNode }) {
+export function MenuProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<MenuState>({
     isMenuOpen: false,
     color: "Light",
@@ -27,11 +27,7 @@ export function MenuProvider({ children }: { children: React.ReactNode }) {
     setState((prev) => ({ ...prev, ...next }));
   };
 
-  return (
-    <MenuContext.Provider value={{ ...state, toggleMenu }}>
-      {children}
-    </MenuContext.Provider>
-  );
+  return <MenuContext.Provider value={{ ...state, toggleMenu }}>{children}</MenuContext.Provider>;
 }
 
 export const useMenu = () => useContext(MenuContext);

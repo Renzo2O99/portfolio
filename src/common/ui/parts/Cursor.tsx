@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
 import { gsap } from "gsap";
+import { useEffect } from "react";
 
 export function Cursor() {
   useEffect(() => {

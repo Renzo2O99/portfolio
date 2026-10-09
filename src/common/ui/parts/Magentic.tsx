@@ -1,11 +1,11 @@
-import React, { memo, useEffect, useRef } from "react";
-import Link from "next/link";
 import { gsap } from "gsap";
+import Link from "next/link";
+import { type AnchorHTMLAttributes, memo, type ReactNode, useEffect, useRef } from "react";
 
-import { cn, isDesktop } from "@/shared/lib/utils";
+import { cn, isDesktop } from "@/shared";
 
-interface MagenticProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
-  children: React.ReactNode;
+type MagenticProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
+  children: ReactNode;
   href?: string;
   className?: string;
   strength?: number;
@@ -23,18 +23,9 @@ interface MagenticProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
         chars?: string;
         speed?: number;
       }[];
-}
+};
 
-const Magentic = ({
-  children,
-  className,
-  onMouseEnter,
-  onMouseLeave,
-  scrambleParams,
-  hoverUnderline = false,
-  strength = 60,
-  ...rest
-}: MagenticProps) => {
+const Magentic = ({ children, className, onMouseEnter, onMouseLeave, scrambleParams, hoverUnderline = false, strength = 60, ...rest }: MagenticProps) => {
   const magnet = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
@@ -42,23 +33,8 @@ const Magentic = ({
       return;
     }
 
-    const magnetButton = magnet.current as HTMLAnchorElement;
+    const magnetButton = magnet.current;
     const shapka = magnetButton.querySelector(".shapka");
-
-    const xTo = gsap.quickTo(magnetButton, "x", {
-      duration: 0.8,
-      ease: "power3.out",
-    });
-    const yTo = gsap.quickTo(magnetButton, "y", {
-      duration: 0.8,
-      ease: "power3.out",
-    });
-    const shapkaXTo = shapka
-      ? gsap.quickTo(shapka, "x", { duration: 0.8, ease: "power3.out" })
-      : null;
-    const shapkaYTo = shapka
-      ? gsap.quickTo(shapka, "y", { duration: 0.8, ease: "power3.out" })
-      : null;
 
     function handleMagnetMove(event: MouseEvent) {
       const currentX = Number(gsap.getProperty(magnetButton, "x")) || 0;
@@ -74,10 +50,23 @@ const Magentic = ({
       const magneticWidth = deltaX / (bounding.width / 2);
       const magneticHeight = deltaY / (bounding.height / 2);
 
-      xTo(magneticWidth * (strength / 2));
-      yTo(magneticHeight * (strength / 2));
-      shapkaXTo?.(magneticWidth * (strength / 4));
-      shapkaYTo?.(magneticHeight * (strength / 4));
+      gsap.to(magnetButton, {
+        x: magneticWidth * (strength / 2),
+        y: magneticHeight * (strength / 2),
+        duration: 0.8,
+        ease: "power3.out",
+        overwrite: "auto",
+      });
+
+      if (shapka) {
+        gsap.to(shapka, {
+          x: magneticWidth * (strength / 4),
+          y: magneticHeight * (strength / 4),
+          duration: 0.8,
+          ease: "power3.out",
+          overwrite: "auto",
+        });
+      }
     }
 
     function handleMagnetLeave() {
@@ -107,11 +96,13 @@ const Magentic = ({
     return () => {
       magnetButton.removeEventListener("mousemove", handleMagnetMove);
       magnetButton.removeEventListener("mouseleave", handleMagnetLeave);
+      gsap.killTweensOf(magnetButton);
+      if (shapka) gsap.killTweensOf(shapka);
     };
   }, [strength]);
 
   function handleScramble(
-    scrambleParams: {
+    params: {
       text: string;
       chars?: string;
       speed?: number;
@@ -127,7 +118,7 @@ const Magentic = ({
         });
         gsap
           .to(scrambleEl, {
-            scrambleText: scrambleParams,
+            scrambleText: params,
             duration: 0.8,
             ease: "power3.out",
           })
@@ -138,13 +129,7 @@ const Magentic = ({
 
   const isInternal = (rest.href ?? "").startsWith("/");
 
-  const classes = cn(
-    "flex justify-center *:pointer-events-none  " +
-      (hoverUnderline
-        ? " before:absolute before:bottom-0 before:h-0.5 before:w-0 before:origin-center before:bg-[#a3a3a3] before:transition-all before:duration-300 hover:before:w-full "
-        : " ") +
-      className,
-  );
+  const classes = cn(`flex justify-center *:pointer-events-none ${hoverUnderline ? " before:absolute before:bottom-0 before:h-0.5 before:w-0 before:origin-center before:bg-muted-foreground before:transition-all before:duration-300 hover:before:w-full " : " "}${className}`);
 
   return (
     <Link
@@ -156,20 +141,18 @@ const Magentic = ({
         if (scrambleParams && magnet.current) {
           const magnetButton = magnet.current;
           const scrambleEl = magnetButton.querySelectorAll(".scrambleText");
-          if (scrambleParams instanceof Array) {
+          if (Array.isArray(scrambleParams)) {
             scrambleParams.forEach((param, i) => {
-              if (scrambleEl[i]) {
-                handleScramble(
-                  { speed: 0.1, chars: "-x", ...param },
-                  scrambleEl[i] as HTMLElement,
-                );
+              const el = scrambleEl[i];
+              if (el instanceof HTMLElement) {
+                handleScramble({ speed: 0.1, chars: "-x", ...param }, el);
               }
             });
-          } else if (scrambleEl[0]) {
-            handleScramble(
-              { speed: 0.1, chars: "-x", ...scrambleParams },
-              scrambleEl[0] as HTMLElement,
-            );
+          } else {
+            const firstEl = scrambleEl[0];
+            if (firstEl instanceof HTMLElement) {
+              handleScramble({ speed: 0.1, chars: "-x", ...scrambleParams }, firstEl);
+            }
           }
         }
         onMouseEnter?.();

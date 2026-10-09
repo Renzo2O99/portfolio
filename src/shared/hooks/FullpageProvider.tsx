@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FullpageNavContext } from "@/shared/hooks/fullpageNavContext";
 
 gsap.registerPlugin(CustomEase);
@@ -10,122 +10,85 @@ gsap.registerPlugin(CustomEase);
 const ANCHORS = ["first", "second", "third", "fourth", "fifth", "sixth"] as const;
 
 type Anchor = (typeof ANCHORS)[number];
-type SliceAnchor = Extract<Anchor, "first" | "second" | "third" | "fourth">;
 
 const WHEEL_THRESHOLD = 40;
 const TOUCH_THRESHOLD = 50;
 
-const FullpageProvider = ({ children }: { children: React.ReactNode }) => {
+const FullpageProvider = ({ children }: { children: ReactNode }) => {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const about = useRef<gsap.core.Timeline | null>(null);
   const videoElement = useRef<HTMLVideoElement | null>(null);
 
-  const ease = useMemo(
-    () => CustomEase.create("custom", "M0,0 C0.52,0.01 0.16,1 1,1 "),
-    [],
-  );
+  const ease = useMemo(() => CustomEase.create("custom", "M0,0 C0.52,0.01 0.16,1 1,1 "), []);
 
-  const scrollEase = useMemo(
-    () => CustomEase.create("fullpage", "M0,0 C0.70,0 0.30,1 1,1"),
-    [],
-  );
+  const scrollEase = useMemo(() => CustomEase.create("fullpage", "M0,0 C0.70,0 0.30,1 1,1"), []);
 
   const animatedAnchors = useRef<Set<Anchor>>(new Set<Anchor>(["first"]));
 
-  const handleSectionChange = useCallback(
-    (anchor: Anchor, direction: "up" | "down") => {
-      const isFirstTime = !animatedAnchors.current.has(anchor);
+  const handleSectionChange = useCallback((anchor: Anchor, direction: "up" | "down") => {
+    const isFirstTime = !animatedAnchors.current.has(anchor);
+    if (isFirstTime) {
+      animatedAnchors.current.add(anchor);
+    }
+
+    if (anchor === "second" || anchor === "fourth") {
+      document.body.classList.add("darkGradient");
+    } else {
+      document.body.classList.remove("darkGradient");
+    }
+
+    if (anchor === "first" && direction === "up") {
+      about.current?.seek(0.3);
+    }
+
+    if (anchor === "second") {
+      if (videoElement.current) {
+        videoElement.current.currentTime = 1.6;
+        videoElement.current.play().catch(() => {});
+      }
+    }
+
+    const flex = window.innerWidth > 540 ? 17 : 5;
+
+    if (direction === "down") {
+      gsap.fromTo(
+        `.${anchor} .rounded__div__down`,
+        { height: `${flex}vh` },
+        {
+          height: "0vh",
+          duration: 1.2,
+          ease,
+        },
+      );
+
       if (isFirstTime) {
-        animatedAnchors.current.add(anchor);
+        gsap.fromTo(`.${anchor} .anime`, { y: "30vh", opacity: 0 }, { y: "0vh", opacity: 1, duration: 1.1, stagger: 0.03, ease });
       }
+    } else {
+      gsap.fromTo(
+        `.${anchor} .rounded__div__up`,
+        { height: `${flex}vh` },
+        {
+          height: "0vh",
+          duration: 1.2,
+          ease,
+        },
+      );
 
-      if (anchor === "second" || anchor === "fourth") {
-        document.body.classList.add("darkGradient");
-      } else {
-        document.body.classList.remove("darkGradient");
+      if (isFirstTime) {
+        gsap.fromTo(`.${anchor} .anime`, { y: "-30vh", opacity: 0 }, { y: "0vh", opacity: 1, duration: 1.1, stagger: -0.08, ease });
       }
-
-      if (anchor === "first" && direction === "up") {
-        about.current?.seek(0.3);
-      }
-
-      if (anchor === "second") {
-        if (videoElement.current) {
-          videoElement.current.currentTime = 1.6;
-          videoElement.current.play().catch(() => {});
-        }
-      }
-
-      const flex = window.innerWidth > 540 ? 17 : 5;
-
-      if (direction === "down") {
-        gsap.fromTo(
-          `.${anchor} .rounded__div__down`,
-          { height: `${flex}vh` },
-          {
-            height: "0vh",
-            duration: 1.2,
-            ease,
-          },
-        );
-
-        if (isFirstTime) {
-          gsap.fromTo(
-            `.${anchor} .anime`,
-            { y: "30vh", opacity: 0 },
-            { y: "0vh", opacity: 1, duration: 1.1, stagger: 0.03, ease },
-          );
-        }
-      } else {
-        gsap.fromTo(
-          `.${anchor} .rounded__div__up`,
-          { height: `${flex}vh` },
-          {
-            height: "0vh",
-            duration: 1.2,
-            ease,
-          },
-        );
-
-        if (isFirstTime) {
-          gsap.fromTo(
-            `.${anchor} .anime`,
-            { y: "-30vh", opacity: 0 },
-            { y: "0vh", opacity: 1, duration: 1.1, stagger: -0.08, ease },
-          );
-        }
-      }
-    },
-    [],
-  );
+    }
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       about.current = gsap
         .timeline({ defaults: { ease: "none" }, repeat: -1 })
-        .fromTo(
-          ".left .animate__this1",
-          { y: "0%", opacity: 1 },
-          { y: "-140%", opacity: 0, duration: 0.9, delay: 1.7, ease },
-        )
-        .fromTo(
-          ".left .animate__this2",
-          { y: "140%", opacity: 0 },
-          { y: "0%", opacity: 1, duration: 0.9, ease },
-          "-=0.9",
-        )
-        .fromTo(
-          ".left .animate__this2",
-          { y: "0%", opacity: 1 },
-          { y: "-140%", opacity: 0, delay: 1.7, duration: 0.9, ease },
-          "-=0.9",
-        )
-        .fromTo(
-          ".left .animate__this1",
-          { y: "140%", opacity: 0 },
-          { y: "0%", opacity: 1, duration: 0.9, ease },
-          "-=0.9",
-        );
+        .fromTo(".left .animate__this1", { y: "0%", opacity: 1 }, { y: "-140%", opacity: 0, duration: 0.9, delay: 1.7, ease })
+        .fromTo(".left .animate__this2", { y: "140%", opacity: 0 }, { y: "0%", opacity: 1, duration: 0.9, ease }, "-=0.9")
+        .fromTo(".left .animate__this2", { y: "0%", opacity: 1 }, { y: "-140%", opacity: 0, delay: 1.7, duration: 0.9, ease }, "-=0.9")
+        .fromTo(".left .animate__this1", { y: "140%", opacity: 0 }, { y: "0%", opacity: 1, duration: 0.9, ease }, "-=0.9");
     });
 
     const observer = new IntersectionObserver(
@@ -153,9 +116,7 @@ const FullpageProvider = ({ children }: { children: React.ReactNode }) => {
   }, [ease]);
 
   useEffect(() => {
-    videoElement.current = document.querySelector(
-      "#video",
-    ) as HTMLVideoElement;
+    videoElement.current = document.querySelector("#video") as HTMLVideoElement;
 
     return () => {
       about.current?.kill();
@@ -174,17 +135,13 @@ const FullpageProvider = ({ children }: { children: React.ReactNode }) => {
     const track = trackRef.current;
     if (!track) return;
 
-    const sections = Array.from(
-      track.querySelectorAll<HTMLElement>(":scope > section"),
-    );
+    const sections = Array.from(track.querySelectorAll<HTMLElement>(":scope > section"));
     if (sections.length === 0) return;
 
     sectionsRef.current = sections;
     setTotalSections(sections.length);
 
-    const getAnchor = (section: Element): Anchor =>
-      (ANCHORS.find((anchor) => section.classList.contains(anchor)) ??
-        "first") as Anchor;
+    const getAnchor = (section: Element): Anchor => (ANCHORS.find((anchor) => section.classList.contains(anchor)) ?? "first") as Anchor;
 
     const total = sections.length;
 
@@ -299,8 +256,7 @@ const FullpageProvider = ({ children }: { children: React.ReactNode }) => {
         onStart: () => {
           const section = sectionsRef.current[next];
           if (section) {
-            const anchor = (ANCHORS.find((a) => section.classList.contains(a)) ??
-              "first") as Anchor;
+            const anchor = (ANCHORS.find((a) => section.classList.contains(a)) ?? "first") as Anchor;
             handleSectionChange(anchor, direction);
           }
         },

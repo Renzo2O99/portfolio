@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import GoogleAnalytics from "@/app/GoogleAnalytics";
 import Script from "next/script";
+import type { ReactNode } from "react";
+import GoogleAnalytics from "@/app/GoogleAnalytics";
 
 import "./globals.css";
-import { MenuProvider } from "@/shared/hooks/menuContext";
-import { PageTransition } from "@/common/ui/parts/PageTransition";
+import { PageTransition } from "@/common";
+import { MenuProvider } from "@/shared";
 
 const helvetica = localFont({
   src: "../../font/helvetica/HelveticaNowDisplay-Medium.woff2",
@@ -16,8 +17,7 @@ const helvetica = localFont({
 
 export const metadata: Metadata = {
   title: "Renzo Dev • Developer",
-  description:
-    "Renzo is a developer who creates high-end, pixel-perfect websites.",
+  description: "Renzo is a developer who creates high-end, pixel-perfect websites.",
   icons: {
     icon: "/favicon.png",
     shortcut: "/favicon.png",
@@ -25,18 +25,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no"
-        ></meta>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no"></meta>
         <link rel="icon" href="/favicon.png" type="image/png" sizes="any" />
         <link rel="shortcut icon" href="/favicon.png" type="image/png" />
         <link rel="apple-touch-icon" href="/favicon.png" />

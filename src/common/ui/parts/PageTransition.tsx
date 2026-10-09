@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { usePathname, useRouter } from "next/navigation";
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
+import { usePathname, useRouter } from "next/navigation";
+import { type ReactNode, useEffect, useRef } from "react";
 import { isDesktop } from "@/shared/lib/utils";
 
 gsap.registerPlugin(CustomEase);
@@ -12,7 +12,7 @@ const DURATION = 0.75;
 const INTERNAL_LINK = 'a[href^="/"]';
 const ease = CustomEase.create("custom", "M0,0 C0.52,0.01 0.16,1 1,1 ");
 
-export function PageTransition({ children }: { children: React.ReactNode }) {
+export function PageTransition({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -62,14 +62,9 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
 
     tl.set(el, { yPercent: 0, y: 0, force3D: true });
     if (wave) {
-      tl.fromTo(
-        wave,
-        { height: flexHeight, force3D: true },
-        { height: "0vh", duration: DURATION, ease, force3D: true },
-      );
+      tl.fromTo(wave, { height: flexHeight, force3D: true }, { height: "0vh", duration: DURATION, ease, force3D: true });
     }
-    tl.to(el, { yPercent: 100, duration: DURATION, ease, force3D: true }, "<")
-      .set(el, { yPercent: -100, y: 0 });
+    tl.to(el, { yPercent: 100, duration: DURATION, ease, force3D: true }, "<").set(el, { yPercent: -100, y: 0 });
 
     return () => {
       clearRescueTimeout();
@@ -85,24 +80,17 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const anchor = (event.target as HTMLElement | null)?.closest?.(
-        INTERNAL_LINK,
-      ) as HTMLAnchorElement | null;
+      const anchor = (event.target as HTMLElement | null)?.closest?.(INTERNAL_LINK) as HTMLAnchorElement | null;
 
       if (!anchor) return;
       if (anchor.target && anchor.target !== "_self") return;
 
       const href = anchor.getAttribute("href");
-      if (
-        !href ||
-        href.startsWith("#") ||
-        href.startsWith("mailto:") ||
-        href.startsWith("tel:")
-      ) {
+      if (!href || href.startsWith("#") || href.startsWith("mailto:") || href.startsWith("tel:")) {
         return;
       }
 
-      // Normalizar rutas comparativas
+      // NOTE: Normaliza query/hash antes de comparar rutas.
       const cleanHref = href.split("?")[0].split("#")[0];
       const cleanPathname = pathname.split("?")[0].split("#")[0];
       if (cleanHref === cleanPathname) return;
@@ -117,7 +105,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
       busy.current = true;
       clearRescueTimeout();
 
-      // Timeout de rescate de 1.5s por seguridad
+      // NOTE: Timeout de rescate de 1.5s que libera el lock de navegación.
       timeoutRef.current = setTimeout(() => {
         busy.current = false;
       }, 1500);
@@ -130,16 +118,11 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
       tl.set(el, { yPercent: -100, y: 0, force3D: true });
 
       if (wave) {
-        tl.fromTo(
-          wave,
-          { height: flexHeight, force3D: true },
-          { height: "0vh", duration: DURATION, ease, force3D: true },
-        );
+        tl.fromTo(wave, { height: flexHeight, force3D: true }, { height: "0vh", duration: DURATION, ease, force3D: true });
       }
-      tl.to(el, { yPercent: 0, duration: DURATION, ease, force3D: true }, "<")
-        .add(() => {
-          router.push(href);
-        });
+      tl.to(el, { yPercent: 0, duration: DURATION, ease, force3D: true }, "<").add(() => {
+        router.push(href);
+      });
     };
 
     document.addEventListener("click", onClick, true);
@@ -153,15 +136,9 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
     <>
       {children}
       <div className="page-transition" aria-hidden="true">
-        <div
-          ref={panelRef}
-          className="page-transition__panel darkGradient flex flex-col justify-between"
-        >
+        <div ref={panelRef} className="page-transition__panel darkGradient flex flex-col justify-between">
           <div className="page-transition__body darkGradient grow" />
-          <div
-            ref={waveRef}
-            className="page-transition__wave rounded__div__up !relative z-50 darkGradient"
-          >
+          <div ref={waveRef} className="page-transition__wave rounded__div__up !relative z-50 darkGradient">
             <div className="round__bg__up darkGradient" />
           </div>
         </div>
