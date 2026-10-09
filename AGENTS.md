@@ -5,10 +5,10 @@
 - **Lenguaje**: TypeScript 5 (strict, `noUncheckedIndexedAccess`)
 - **Runtime**: React 19, Node.js 22+
 - **Animaciones**: GSAP 3 + CustomEase, SplitType, Swiper
-- **3D / Canvas**: Three.js, @react-three/drei, @react-three/postprocessing, @splinetool/r3f-spline
+- **3D / Canvas**: Three.js, @react-three/fiber, @react-three/drei, @react-three/postprocessing, @splinetool/r3f-spline
 - **Formularios & Validación**: React Hook Form + Zod
 - **Email / API**: Resend
-- **Estilos**: Tailwind CSS 3/4 + utilidad `cn()` (clsx + tailwind-merge)
+- **Estilos**: Tailwind CSS + utilidad `cn()` (clsx + tailwind-merge)
 - **UI**: Componentes shadcn (Base UI / Radix primitives adaptados)
 - **Gestor de paquetes**: pnpm
 
@@ -23,47 +23,8 @@ pnpm start               # Servidor de producción
 
 # Verificación de tipos y calidad
 pnpm typecheck           # tsc --noEmit
-pnpm lint:lenses         # Auditoría con el motor de 35 lenses
+pnpm lint:lenses         # Auditoría con el motor de lenses
 pnpm audit:exceptions    # Auditoría de excepciones técnicas con timeline
-```
-
----
-
-## Arquitectura y DAG (Grafo Acíclico Dirigido)
-
-### Regla de dependencia estricta:
-`app → modules → shared/infrastructure → common`
-
-- **Superior PUEDE importar de inferior.** Inferior NUNCA importa de superior.
-- **`common/` NUNCA importa de `modules/`, `shared/` ni `infrastructure/`.**
-- **`shared/` NUNCA importa de `modules/`** (excepto tipos/interfaces sin lógica).
-- **Módulos NUNCA importan directamente de módulos hermanos** → usar API pública (`index.ts`) o patrones de desacoplamiento (Slot Injection, Prop Injection, hooks en `shared/`).
-
----
-
-## Estructura Semántica de Módulos
-
-```
-src/ (o raíz)
-├── modules/<feature>/
-│   ├── index.ts              # Frontera pública del módulo (SOLO re-exports)
-│   ├── server.ts             # API pública de servidor (si aplica)
-│   ├── actions/              # Server Actions (*.action.ts)
-│   ├── hooks/                # Custom hooks (use-*.ts)
-│   ├── lib/                  # Lógica de dominio del módulo
-│   ├── models/               # Tipos, interfaces y schemas Zod
-│   └── ui/                   # Subcarpetas semánticas (Brújula UI)
-│       ├── forms/            # Smart: gestiona estado, llama hooks, coordina flujo
-│       ├── parts/            # Dumb: solo props + eventos, sin lógica de negocio
-│       ├── cards/            # Variantes visuales de una entidad
-│       ├── sections/         # Server/Client Components para orquestar zonas
-│       └── skeletons/        # Loading states de la feature
-├── common/
-│   └── ui/
-│       ├── parts/            # Componentes shadcn auditados (Button, Dialog, Input...)
-│       └── shadcn-staging/   # Área temporal de preparación de shadcn
-├── infrastructure/           # Configs externas, integraciones, cliente API/mail
-└── app/                      # Rutas Next.js (App Router)
 ```
 
 ---
@@ -72,11 +33,12 @@ src/ (o raíz)
 
 **Regla:** shadcn NUNCA instala directamente en `common/ui/parts/`. Siempre pasa por staging.
 
+### Flujo
 ```bash
 # 1. Instalar componente crudo en staging
 npx shadcn add <componente>
 
-# 2. Analizar y adaptar en shadcn-staging/
+# 2. Analizar y adaptar en staging/
 # 3. Mover versión corregida a parts/
 mv src/common/ui/shadcn-staging/<componente>.tsx src/common/ui/parts/
 
@@ -84,58 +46,172 @@ mv src/common/ui/shadcn-staging/<componente>.tsx src/common/ui/parts/
 rm src/common/ui/shadcn-staging/*
 ```
 
-### Reglas de fragmentación y refactorización
+### Reglas de fragmentación y refactorización (obligatorias)
 1. **NUNCA reemplazar el componente por uno propio:** La fragmentación extrae sub-componentes o separa responsabilidades manteniendo el núcleo de shadcn.
-2. **Preservar comportamiento:** Mantener idénticas props públicas, variantes CVA, tipos exportados y accesibilidad ARIA.
-3. **Límites de líneas:** UI < 250 líneas, Hooks < 200 líneas, Utilidades < 100 líneas.
+2. **NUNCA plagiar de otras fuentes:** No copiar implementaciones de terceros salvo que shadcn lo use.
+3. **Preservar comportamiento:** Mantener idénticas props públicas, variantes CVA, tipos exportados y accesibilidad ARIA.
+4. **Límites de líneas:** UI < 250 líneas, Hooks < 200 líneas, Utilidades < 100 líneas.
+5. **Método de lectura (obligatorio):** Leer un solo archivo a la vez para no saturar el contexto.
 
 ---
 
-## Constitución del Auditor: 35 Lenses de Calidad
+## Documentación de Next.js para Agentes IA
 
-| Lente | Nombre | Descripción |
-|-------|--------|-------------|
-| **Lens 01** | Topografía | Estructura de carpetas obligatorias y prohibidas |
-| **Lens 02** | Smart/Dumb | Separación limpia entre UI con estado (`forms/`) y presentacional (`parts/`) |
-| **Lens 03** | Naming | Convenciones de nombres (`PascalCase.tsx`, `use-*.ts`, etc.) |
-| **Lens 04** | Coherencia | Cohesión conceptual de archivos y módulos |
-| **Lens 05** | Strings | Extracción y centralización de textos y mensajes |
-| **Lens 06** | Environment | Validación de variables de entorno y prevención de fugas |
-| **Lens 07** | Dependencias | DAG estricto, detección de dependencias circulares |
-| **Lens 08** | Triple Border | Validación de fronteras de API pública (`index.ts`, `server.ts`) |
-| **Lens 09** | Module Extraction | Detección de módulos que deben ser extraídos |
-| **Lens 10** | Seguridad | Prevención de vulnerabilidades, IDOR y datos sensibles |
-| **Lens 11** | Error Handling | Error Boundaries, fallbacks y manejo de errores robusto |
-| **Lens 12** | Type Safety | Cero `any`, uso de `unknown` con Zod/type guards |
-| **Lens 13** | Histología | Cohesión interna de funciones y hooks |
-| **Lens 14** | Performance | Memoización consciente, lazy loading, bundles |
-| **Lens 15** | Accesibilidad | ARIA labels, navegación por teclado, contraste |
-| **Lens 16** | Comment Hygiene | Comentarios solo con razón técnica, sin ruido |
-| **Lens 17** | Dead Code | Detección y eliminación de código muerto/huérfano |
-| **Lens 18** | Cross-Module | Prohibición de imports directos entre módulos hermanos |
-| **Lens 19** | Fragmentación | División limpia de archivos que superen los umbrales |
-| **Lens 20** | New Module | Protocolo para la creación de nuevos módulos |
-| **Lens 21** | Cohesion Scatter | Concentración de responsabilidades |
-| **Lens 22** | Color Tokens | Uso de variables CSS/design tokens en lugar de hex hardcodeados |
-| **Lens 23** | Radius Tokens | Uso de tokens de borde redondeado |
-| **Lens 24** | Typography Tokens | Escala tipográfica uniforme |
-| **Lens 25** | Spanish Naming | Consistencia idiomática en el naming |
-| **Lens 26** | Component Naming | Archivos `PascalCase.tsx` |
-| **Lens 27** | ESLint Exception | Control y limpieza de deshabilitaciones de lint |
-| **Lens 28** | Actions Purity | Server Actions con validación Zod y manejo de retorno |
-| **Lens 29** | Component Purity | Componentes libres de efectos secundarios no controlados |
-| **Lens 30** | Motion Props | Propagación controlada de animaciones GSAP/Motion |
-| **Lens 31** | Error Boundaries | Boundaries por módulo y rutas críticas |
-| **Lens 32** | No Permanent Exception | Toda excepción técnica debe tener timeline |
-| **Lens 33** | Imports Top | Imports limpios al inicio del archivo |
-| **Lens 34** | Inline Object Cast | Evitar casteos forzados de objetos |
-| **Lens 35** | Cache & Hydration | Prevención de FOUC, layout shifts y desajustes de hidratación |
+### Regla de oro
+**Este NO es el Next.js de datos de entrenamiento.** Puede tener breaking changes. Leer SIEMPRE la guía relevante en `node_modules/next/dist/docs/` antes de escribir cualquier código.
+
+### Docs empaquetadas (versionadas)
+Next.js 16 empaqueta su documentación en `node_modules/next/dist/docs/`. Los agentes tienen acceso a documentación fiel a la versión instalada sin requerir red.
+
+### 🚨 Alerta de actualización de Next.js (OBLIGATORIA)
+Si el proyecto NO está en **Next.js 16.3 o superior**, el agente DEBE:
+1. Enviar una alerta de actualización al usuario indicando versión actual, requerida y motivo.
+2. **NUNCA actualizar manualmente** sin autorización explícita del usuario.
+3. Esperar la decisión del usuario.
+
+---
+
+## Arquitectura (Screaming Architecture + DAG)
+
+```
+app/ → modules/ → shared/ + infrastructure/ → common/
+```
+
+### Reglas de Dependencia (estrictas)
+- ✅ Superior → Inferior
+- ❌ Inferior → Superior
+- ❌ Módulo ↔ Módulo (usar API pública: `index.ts`, `server.ts`, `server-ui.ts`)
+- ❌ `common/` importa de `modules/`, `shared/`, `infrastructure/`
+- ❌ `shared/` importa de `modules/` (solo tipos permitidos)
+
+### Estructura de Módulo (cada módulo en `src/modules/<dominio>/`)
+```
+actions/          # *.action.ts (server actions)
+hooks/            # use-*.ts (hooks cliente, kebab-case)
+lib/              # kebab-case.ts (lógica de dominio)
+models/           # *.schema.ts (schemas Zod) / *.types.ts (tipos TypeScript)
+store/            # use-*.store.ts (Zustand, debe empezar con use-)
+ui/
+  forms/          # Componentes Smart (gestión de estado, hooks)
+  parts/          # Componentes Dumb (props + eventos)
+  cards/          # Variantes visuales de entidad
+  sections/       # Server/Client Components para orquestar zonas
+  skeletons/      # Loading states
+```
+
+### Triple Frontera (API Pública por módulo)
+| Archivo | Exporta | Prohíbe |
+|---------|---------|---------|
+| `index.ts` | API cliente (componentes UI, hooks, tipos) | Código servidor, Server Components, secrets |
+| `server.ts` | Server Actions y funciones de backend | Componentes cliente, hooks |
+| `server-ui.ts` | Server Components para capas superiores | Componentes cliente con estado, Server Actions |
+
+---
+
+## Convenciones de Nombrado (estrictas)
+
+| Tipo | Patrón | Ejemplo |
+|------|--------|---------|
+| Componente | `PascalCase.tsx` | `ProjectCard.tsx` |
+| Hook | `use-kebab-case.ts` | `use-fullpage-nav.ts` |
+| Action | `verb-noun.action.ts` | `send-email.action.ts` |
+| Store | `use-dominio.store.ts` | `use-portfolio.store.ts` |
+| Config | `*.config.ts` | `site.config.ts` |
+| Util (pura) | `*.util.ts` | `format-date.util.ts` |
+| Schema (Zod) | `*.schema.ts` | `contact.schema.ts` |
+| Types (TS) | `*.types.ts` | `work.types.ts` |
+
+**Carpetas prohibidas**: `core/`, `helpers/`, `manager/`, `controller/`, `utils/` (plural), `components/` dentro de `ui/`. Usar `internal/` para lógica privada del módulo.
+
+### Idioma de Constantes (obligatorio)
+| Elemento | Idioma | Ejemplo |
+|----------|--------|---------|
+| Keys de constantes (`*_TEXTS`, `*_MESSAGES`) | **Inglés** `SCREAMING_SNAKE_CASE` | `BUTTON_SUBMIT`, `ERROR_REQUIRED_FIELD` |
+| Valores de textos de UI | Español / Inglés según i18n | `"Enviar Mensaje"`, `"Let's talk"` |
+
+---
+
+## Reglas Críticas de Código
+
+### Cero Tolerancia
+- ❌ `any` (explícito o implícito) — usar tipos concretos o `unknown` con validación Zod/type guards
+- ❌ `as Type` casts que enmascaren problemas de tipo sin guard previo
+- ❌ Non-null `!` assertions sin guards de validación
+- ❌ `@ts-ignore` / `@ts-expect-error` sin bloque `EXCEPTION/PLAN/TIMELINE`
+- ❌ Barrel files internos (`index.ts` dentro de subdirectorios de módulo)
+- ❌ Imports directos a rutas internas de otros módulos o capas
+
+### Server Actions
+- Patrón obligatorio: **Validar (Zod) → Autorizar (si aplica) → Ejecutar → Retornar `{ success, data?, error? }`**.
+- Input validado mediante `schema.safeParse()`.
+
+### Imports
+- Entre módulos: absoluto `@/modules/...`
+- Capas globales: `@/common`, `@/shared`
+- Dentro del mismo módulo: relativo `./`, `../`
+
+### Clasificación UI (Brújula)
+| Pregunta | `forms/` | `parts/` |
+|----------|----------|----------|
+| ¿Tiene lógica de negocio? | Sí | No |
+| ¿Llama hooks/actions? | Sí | No (solo props) |
+| Consumidores | Feature local | >2 contextos |
+
+---
+
+## Límites de Archivo
+| Tipo | Líneas | Responsabilidades |
+|------|--------|-------------------|
+| Componente UI | 250 | 1 principal |
+| Server Action | 150 | 1 operación de dominio |
+| Hook | 200 | 1 preocupación |
+| Utilidad pura | 100 | 1 propósito |
+| Store | 300 | 1 dominio |
+
+---
+
+## Convención de Botones y Formularios
+- **Botones en Diálogos**: Cancelar IZQUIERDA (`outline`/`ghost`), acción primaria DERECHA (`default`/`destructive`).
+- **Checkboxes**: El área clickeable es TODO el contenedor — envolver `Checkbox` + texto en `<label htmlFor>` con `cursor-pointer` y `hover:bg-accent/30`.
+
+---
+
+## Metodología de Implementación (9 Fases Obligatorias)
+
+```
+PLANIFICAR → LEER → REFINAR → IMPLEMENTAR → VERIFICAR → REVISAR → CORREGIR → PROBAR → DOCUMENTAR
+```
+
+---
+
+## Metodología de Corrección (Lotes Pequeños) — OBLIGATORIA
+
+Al corregir advertencias de lenses (`pnpm lint:lenses`):
+1. **NO leer el contexto completo** de golpe.
+2. **Seleccionar 3-5 violaciones** del mismo archivo o patrón.
+3. **Leer únicamente el contexto necesario**.
+4. **Aplicar los fixes** del lote.
+5. **Verificar**: `pnpm typecheck`.
+6. **Re-ejecutar el lens** del módulo para confirmar la reducción.
+7. **Repetir** con el siguiente lote.
+
+---
+
+## Verificación Empírica y Honestidad del Agente
+
+### Honestidad: observado ≠ deducido (obligatorio)
+1. **Etiquetar cada afirmación con su fuente:**
+   - `[observado]` — capturado en navegador real (`agent-browser`) o logs reales
+   - `[reproducido]` — confirmado con reproducción simulada (tsx + mocks)
+   - `[deducido]` — hipótesis por análisis estático. NUNCA presentarla como hecho.
+2. **NUNCA afirmar evidencia de navegador sin haberla capturado.**
+3. **Pitfall de serialización (`.toString()` en scripts inline):** funciones inyectadas en `<head>` que referencien variables no serializadas producen `ReferenceError` en runtime. Validar siempre scripts inline.
 
 ---
 
 ## Protocolo de Excepciones Técnicas
 
-Toda excepción a las reglas de lentes debe documentarse estrictamente con el siguiente formato:
+Toda excepción a las reglas debe documentarse con el siguiente formato:
 
 ```typescript
 // EXCEPCIÓN: [Razón técnica explícita]
@@ -143,11 +219,11 @@ Toda excepción a las reglas de lentes debe documentarse estrictamente con el si
 // TIMELINE: [Q1/Q2/Q3/Q4 YYYY]
 ```
 
-Cualquier excepción sin `TIMELINE` es considerada deuda técnica no gestionada.
+Toda excepción sin `TIMELINE` se considera deuda técnica no gestionada.
 
 ---
 
-## Verificación Empírica y Calidad de Código
-- **CERO TOLERANCIA a `any`** en TypeScript.
-- **`pnpm typecheck`** obligatorio antes de dar por terminada cualquier tarea.
-- **Observado ≠ Deducido:** Validar bugs de renderizado, animaciones y layout empíricamente en el viewport real.
+## Referencias de la Constitución y Lentes
+- Reglas completas en `.opencode/constitution/` (`00-role.md` a `14-skills.md`).
+- Lentes de auditoría en `.opencode/lenses/` (`01-topography.md` a `32-no-permanent-exception.md`).
+- Workflows operacionales en `.opencode/workflows/`.
