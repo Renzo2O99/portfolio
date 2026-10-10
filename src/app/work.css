@@ -192,8 +192,10 @@ ul {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding-top: 4.5rem;
-    padding-bottom: 7rem;
+    /* NOTE: solo padding-top (header fijo). El bottom lo aporta el wrapper
+       (pb-24): contar ambos rompía el fit en 100dvh y sangraba bajo el header. */
+    padding-top: 3.5rem;
+    padding-bottom: 0;
     overflow: visible;
   }
 
@@ -201,9 +203,12 @@ ul {
     position: relative;
     aspect-ratio: 16 / 9;
     width: 100%;
-    max-width: 500px;
+    max-width: 440px;
+    /* NOTE: tope en dvh para que imagen+título+botón quepan en 100dvh
+       (el img con object-contain hace letterbox si recorta). */
+    max-height: 30dvh;
     height: auto;
-    margin: 0 auto 1.25rem auto;
+    margin: 0 auto 1rem auto;
     top: auto;
   }
 

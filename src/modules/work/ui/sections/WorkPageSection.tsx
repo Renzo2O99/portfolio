@@ -19,7 +19,7 @@ export function WorkPageSection({ index, project, color }: WorkPageSectionProps)
       <Header color={color} />
       <RoundedSlideTransition type={color} />
 
-      <div className="flex h-[100dvh] w-full items-center px-paddingX pb-28 md:pb-0">
+      <div className="flex h-[100dvh] w-full items-center px-paddingX pb-24 md:pb-0">
         <div className="work__slide mx-auto max-w-maxWidth">
           <a className={cn("image image--works", `image--works${index + 1}`, "anime relative block rounded-3xl")} target="_blank" rel="noreferrer" href={project.link}>
             <Image src={project.imageLink} alt="" fill sizes="(max-width: 640px) 90vw, (max-width: 1024px) 70vw, 800px" loading={index === 0 ? "eager" : "lazy"} priority={index === 0} className="object-contain" />
