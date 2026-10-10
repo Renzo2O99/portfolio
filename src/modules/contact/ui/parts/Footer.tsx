@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { cn, getJoinedDate, links } from "@/shared";
+import { cn } from "cn";
+import { getJoinedDate, links } from "@/shared";
 import { CONTACT_TEXTS } from "../../lib/contact-texts.constants";
 import { FooterGroup } from "./FooterGroup";
 

@@ -1,10 +1,10 @@
 import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
 import { useEffect, useRef } from "react";
-import { links } from "@/shared/data/data";
-import { useMenu } from "@/shared/hooks/menuContext";
-import { cn } from "@/shared/lib/utils";
-import Magentic from "./Magentic";
+import { links } from "@/shared/data/site-links";
+import { useMenu } from "@/shared";
+import { cn } from "cn";
+import MagneticLink from "./MagneticLink";
 import "@/app/header.css";
 
 gsap.registerPlugin(CustomEase);
@@ -50,7 +50,7 @@ export function Header({ color, className, mode = "hamburger" }: HeaderProps) {
     <header className={cn("nav__container anime px-paddingX", className)}>
       <nav className="nav__bar ">
         <div className="max-w-maxWidth">
-          <Magentic
+          <MagneticLink
             href={links.home}
             strength={50}
             className={`nav__item text-xl font-bold text-color${color} before:bg-color${color}`}
@@ -75,8 +75,8 @@ export function Header({ color, className, mode = "hamburger" }: HeaderProps) {
                 />
               </svg>
             </p>
-          </Magentic>
-          <Magentic
+          </MagneticLink>
+          <MagneticLink
             strength={50}
             className={`mask nav__item h-8 w-8 cursor-pointer items-center text-color${color} before:bg-color${color}`}
             onClick={() => {
@@ -104,7 +104,7 @@ export function Header({ color, className, mode = "hamburger" }: HeaderProps) {
                 })}
               />
             </div>
-          </Magentic>
+          </MagneticLink>
         </div>
       </nav>
     </header>

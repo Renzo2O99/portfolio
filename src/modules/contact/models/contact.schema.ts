@@ -9,4 +9,3 @@ export const contactFormSchema = z.object({
 });
 
 export type ContactFormValues = z.infer<typeof contactFormSchema>;
-export type TFormSchema = ContactFormValues;

@@ -1,18 +1,20 @@
 "use client";
-import { Cursor, HeaderNavigation, Main } from "@/common";
-import { FullpageProvider } from "@/shared";
+import { CustomCursor } from "@/common";
+import { FullscreenMenu } from "./FullscreenMenu";
+import { LandingSections } from "./LandingSections";
+import { LandingScrollProvider } from "@/shared";
 
 import "./index.css";
 
 export default function HomePage() {
   return (
     <>
-      <Cursor />
-      {/* <Intro /> */}
-      <HeaderNavigation />
-      <FullpageProvider>
-        <Main />
-      </FullpageProvider>
+      <CustomCursor />
+      {/* <SplashIntro /> */}
+      <FullscreenMenu />
+      <LandingScrollProvider>
+        <LandingSections />
+      </LandingScrollProvider>
     </>
   );
 }

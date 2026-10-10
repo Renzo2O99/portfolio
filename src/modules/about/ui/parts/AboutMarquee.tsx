@@ -13,7 +13,7 @@ import ReactIcon from "@/public/svg/reactIcon.svg";
 import TailwindIcon from "@/public/svg/tailwindIcon.svg";
 import TypescriptIcon from "@/public/svg/typescriptIcon.svg";
 import Webflow from "@/public/svg/webflow.svg";
-import { cn } from "@/shared";
+import { cn } from "cn";
 
 export function AboutMarquee() {
   useEffect(() => {

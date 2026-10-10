@@ -207,5 +207,87 @@ export default function lens12(modName) {
     }
   }
 
+  // §15. Separación schema/types en models/
+  // MODEL-1: type manual (object literal) en *.schema.ts — solo z.infer/z.input/$infer/typeof.
+  // MODEL-2: FormValues/Input manual en *.types.ts con schema hermano — usar z.infer.
+  // MODEL-3: re-export de tabla (export { x }) desde *.schema.ts.
+  const hasNearbyException = (allLines, idx, radius = 15) => {
+    const from = Math.max(0, idx - radius);
+    for (let k = from; k < idx; k++) {
+      if (/EXCEPTION\s*:/.test(allLines[k])) return true;
+    }
+    return false;
+  };
+
+  const schemaFilesInDir = new Set(
+    files.filter((f) => f.endsWith(".schema.ts")).map((f) => f.slice(0, -".schema.ts".length)),
+  );
+
+  for (const f of files) {
+    const content = readFileSafe(f);
+    const relPath = getRelativePath(f);
+    if (!relPath.includes("/models/")) continue;
+    const lines = content.split("\n");
+
+    if (relPath.endsWith(".schema.ts")) {
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (!/^\s*export\s+type\s+\w+\s*=/.test(line)) continue;
+        // Acumular RHS hasta el ";" para ver si deriva de schema/ORM
+        let rhs = line;
+        for (let j = i + 1; j < Math.min(lines.length, i + 12) && !rhs.includes(";"); j++) {
+          rhs += `\n${lines[j]}`;
+        }
+        if (/z\.(infer|input)|inferSelect|inferInsert|typeof\s+\w/.test(rhs)) continue;
+        if (hasNearbyException(lines, i)) continue;
+        const nameMatch = line.match(/export\s+type\s+(\w+)/);
+        violations.push({
+          lens: "12",
+          severity: "🟠",
+          file: `${relPath}:${i + 1}`,
+          msg: `MODEL-1: type manual "${nameMatch?.[1] ?? "?"}" en *.schema.ts. Solo z.infer/z.input/$inferSelect/$inferInsert. Mover a *.types.ts o derivar del schema`,
+        });
+      }
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmed = line.trim();
+        if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
+        if (!/^\s*export\s*\{[^}]*\}\s*;?\s*$/.test(line)) continue;
+        if (/\btype\b/.test(line)) continue;
+        if (hasNearbyException(lines, i)) continue;
+        violations.push({
+          lens: "12",
+          severity: "🟡",
+          file: `${relPath}:${i + 1}`,
+          msg: `MODEL-3: re-export de tabla en *.schema.ts. Importar la tabla desde @/infrastructure en cada consumidor`,
+        });
+      }
+    }
+
+    if (relPath.endsWith(".types.ts")) {
+      const normF = f.replace(/\\/g, "/");
+      const dirBase = normF.slice(0, -".types.ts".length);
+      const normSchemas = [...schemaFilesInDir].map((s) => s.replace(/\\/g, "/"));
+      const hasSchemaSibling =
+        normSchemas.includes(dirBase) ||
+        normSchemas.some((s) => s.slice(0, s.lastIndexOf("/")) === normF.slice(0, normF.lastIndexOf("/")));
+      if (!hasSchemaSibling) continue;
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (!/^\s*export\s+type\s+\w*(FormValues|Input|Request|Payload|Values)\s*=/.test(line)) continue;
+        if (/z\.(infer|input)|inferSelect|inferInsert|typeof\s+\w/.test(line)) continue;
+        if (hasNearbyException(lines, i)) continue;
+        const nameMatch = line.match(/export\s+type\s+(\w+)/);
+        violations.push({
+          lens: "12",
+          severity: "🟠",
+          file: `${relPath}:${i + 1}`,
+          msg: `MODEL-2: "${nameMatch?.[1] ?? "?"}" manual en *.types.ts con schema hermano. Importar el z.infer del schema en vez de reescribirlo`,
+        });
+      }
+    }
+  }
+
   return violations;
 }

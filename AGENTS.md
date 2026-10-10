@@ -74,15 +74,16 @@ Si el proyecto NO está en **Next.js 16.3 o superior**, el agente DEBE:
 ## Arquitectura (Screaming Architecture + DAG)
 
 ```
-app/ → modules/ → shared/ + infrastructure/ → common/
+app/ → modules/ → common/ → shared/ (+ infrastructure/ al margen)
 ```
 
 ### Reglas de Dependencia (estrictas)
 - ✅ Superior → Inferior
 - ❌ Inferior → Superior
 - ❌ Módulo ↔ Módulo (usar API pública: `index.ts`, `server.ts`, `server-ui.ts`)
-- ❌ `common/` importa de `modules/`, `shared/`, `infrastructure/`
-- ❌ `shared/` importa de `modules/` (solo tipos permitidos)
+- ❌ `common/` importa de `modules/` e `infrastructure/`
+- ✅ `common/` PUEDE importar de `shared/` (singletons estables + utils sin estado)
+- ❌ `shared/` importa de `common/`, `modules/` (valor) e `infrastructure/` — es hoja pura (solo react/third-party + tipos de `modules/`). La aciclidad se garantiza por lens 07 §10, no por diagrama.
 
 ### Estructura de Módulo (cada módulo en `src/modules/<dominio>/`)
 ```

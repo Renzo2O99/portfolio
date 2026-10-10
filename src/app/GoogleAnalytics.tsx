@@ -1,6 +1,6 @@
 import Script from "next/script";
 
-const GoogleAnalytics = () => {
+export function GoogleAnalytics() {
   return (
     <>
       <Script strategy="lazyOnload" src={`https://www.googletagmanager.com/gtag/js?id=G-32FBS7Y85P`} />
@@ -17,6 +17,4 @@ const GoogleAnalytics = () => {
       </Script>
     </>
   );
-};
-
-export default GoogleAnalytics;
+}

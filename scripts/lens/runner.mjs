@@ -6,7 +6,7 @@ import lens03 from "./lens-03-naming.mjs";
 import lens04 from "./lens-04-coherence.mjs";
 import lens05, { lens05CrossModule } from "./lens-05-strings.mjs";
 import lens06 from "./lens-06-environment.mjs";
-import lens07, { lens07AppImports, lens07CycleGraph, lens07DeepImportNotExported } from "./lens-07-dependencies.mjs";
+import lens07, { lens07AppImports, lens07CycleGraph, lens07DeepImportNotExported, lens07LibraryImportsModules } from "./lens-07-dependencies.mjs";
 import lens08 from "./lens-08-triple-border.mjs";
 import lens09 from "./lens-09-module-extraction.mjs";
 import lens10 from "./lens-10-security.mjs";
@@ -103,6 +103,7 @@ function main() {
   const appImportsViolations = lens07AppImports();
   const cycleViolations = lens07CycleGraph();
   const deepNotExportedViolations = lens07DeepImportNotExported();
+  const libraryImportsViolations = lens07LibraryImportsModules();
   const componentNamingViolations = lens26ComponentNamingGlobal();
   const eslintExceptionViolations = lens27Global();
   const errorBoundariesViolations = lens31ErrorBoundariesGlobal();
@@ -149,6 +150,7 @@ function main() {
       ...filterByModule(commentHygieneViolations, mod, isLib),
       ...filterByModule(eslintExceptionViolations, mod, isLib),
       ...filterByModule(appImportsViolations, mod, isLib),
+      ...filterByModule(libraryImportsViolations, mod, isLib),
       ...filterByModule(cycleViolations, mod, isLib),
       ...filterByModule(deepNotExportedViolations, mod, isLib),
       ...filterByModule(componentNamingViolations, mod, isLib),
@@ -172,6 +174,7 @@ function main() {
     ...commentHygieneViolations,
     ...eslintExceptionViolations,
     ...appImportsViolations,
+    ...libraryImportsViolations,
     ...cycleViolations,
     ...deepNotExportedViolations,
     ...componentNamingViolations,

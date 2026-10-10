@@ -5,9 +5,9 @@
 // TIMELINE: Q4 2026
 
 export { CONTACT_TEXTS } from "./lib/contact-texts.constants";
-export { type ContactFormValues, contactFormSchema, type TFormSchema } from "./models/contact.schema";
-export { BgImage } from "./ui/parts/BgImage";
-export { BgImagesContainer } from "./ui/parts/BgImagesContainer";
+export { type ContactFormValues, contactFormSchema } from "./models/contact.schema";
+export { BackgroundImage } from "./ui/parts/BackgroundImage";
+export { BackgroundImages } from "./ui/parts/BackgroundImages";
 export { ErrorBoundary } from "./ui/parts/ErrorBoundary";
 export { Footer } from "./ui/parts/Footer";
 export { FooterGroup } from "./ui/parts/FooterGroup";

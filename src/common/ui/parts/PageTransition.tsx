@@ -4,7 +4,7 @@ import { gsap } from "gsap";
 import { CustomEase } from "gsap/CustomEase";
 import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useRef } from "react";
-import { isDesktop } from "@/shared/lib/utils";
+import { isDesktop } from "@/shared/lib/viewport.util";
 
 gsap.registerPlugin(CustomEase);
 

@@ -3,6 +3,10 @@ import { findFiles, getModDir, getModuleOverride, getRelativePath, MODULES_DIR, 
 
 const FORBIDDEN_ABBREVIATIONS = ["nb", "val", "res", "req", "fn", "cb", "idx", "cnt", "tmp", "str", "obj", "arr", "bool", "num", "err", "evt"];
 
+// Identificadores que abrevian con prefijo Bg/Nav/Mgr + mayúscula (BgImage, bgImagesData).
+// No colisiona con Tailwind (bg- minúscula + guion) ni con `const nav =` / `const img =` (idiomáticos).
+const ABBR_PREFIX_IDENT = /\b(Bg|Mgr)[A-Z]\w*/;
+
 const ALLOWED_SINGLE_CHARS = ["e", "r", "g", "b", "a", "id", "db", "ui", "ctx", "fs", "env", "acc", "prev", "next"];
 const VAGUE_PARAMS = /^(data|info|item|result|response)$/;
 
@@ -35,6 +39,21 @@ export default function lens03(modName) {
         const abbrRegex = new RegExp(`\\b${abbr}\\s*[=:]`);
         if (abbrRegex.test(line) && !/^\s*\/\//.test(line) && !content.includes("/** EXCEPTION") && !content.includes("// EXCEPTION")) {
           violations.push({ lens: "03", severity: "🟡", file: `${relPath}:${lineNum}`, msg: `Abreviatura prohibida: "${abbr}". Usar nombre completo` });
+        }
+      }
+
+      // Prefijos abreviados en identificadores (BgImage, bgImagesTween) — la prop `i` va aparte abajo
+      const abbrIdent = line.match(ABBR_PREFIX_IDENT);
+      if (abbrIdent && !/^\s*\/\//.test(line) && !/["'`][^"'`]*Bg[A-Z]/.test(line)) {
+        violations.push({ lens: "03", severity: "🟡", file: `${relPath}:${lineNum}`, msg: `Identificador abreviado "${abbrIdent[1]}…". Expandir (Bg→Background, Mgr→Manager)` });
+      }
+
+      // Props/parámetros desestructurados de 1 letra: { total, imageItem, i }
+      // (imports como `import { z }` están exentos: alias de librería, no dominio)
+      if (/^\s*import\b/.test(line)) continue;
+      for (const m of line.matchAll(/[{,]\s*([a-zA-Z])\s*[,}]/g)) {
+        if (!ALLOWED_SINGLE_CHARS.includes(m[1])) {
+          violations.push({ lens: "03", severity: "🟠", file: `${relPath}:${lineNum}`, msg: `Prop/parámetro de 1 letra "${m[1]}". Usar nombre medible (ej: i→index)` });
         }
       }
     }

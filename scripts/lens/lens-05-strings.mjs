@@ -1,6 +1,6 @@
 // NOTE: lens-05-strings.mjs — Audita strings hardcodeados y recomienda centralización en *-texts.constants.ts.
 // NOTE: Exclusiones (no son copy UI): hex de tema (los audita Lens 22), selector DOM "body",
-// NOTE: config de GSAP CustomEase ("custom", paths M0,0,...). Ver ABOUT_TEXTS (solo textos visibles).
+// NOTE: config de GSAP CustomEase ("custom", paths M0,0,...). Los *-texts.constants.ts contienen solo textos visibles.
 // NOTE: Doc alineada en .opencode/lenses/05-string-audit.md §6.
 
 import { join } from "node:path";
@@ -158,7 +158,7 @@ function lens05UIStrings(modName) {
       if (/^\.[a-z0-9]{2,5}$/i.test(str)) continue;
       // NOTE: hex de tema (#fff, #0e0d0c...) — pertenecen a Lens 22 (color-tokens),
       // no a Lens 05. Centralizarlos en *-texts.constants.ts confundiría
-      // valores CSS con copy UI (ver ABOUT_TEXTS: solo textos visibles).
+      // valores CSS con copy UI (los *-texts.constants.ts contienen solo textos visibles).
       if (/^#[0-9a-fA-F]{3,8}$/.test(str.trim())) continue;
       // NOTE: selector DOM "body" (gsap.to("body", ...)) — no es texto visible,
       // es un target de animación. No centralizar.

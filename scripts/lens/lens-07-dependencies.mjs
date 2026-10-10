@@ -351,4 +351,52 @@ function lens07DeepImportNotExported() {
   return violations;
 }
 
-export { lens07AppImports, lens07CycleGraph, lens07DeepImportNotExported };
+/**
+ * Guarda de aciclidad de la base del DAG (app → modules → common → shared).
+ *
+ * `common/` PUEDE importar de `shared/` (singletons estables + utils sin estado).
+ * Lo prohibido es que `shared/` —hoja pura— importe hacia arriba: @/common,
+ * @/modules (valor) o @/infrastructure. `import type` desde modules/ sí permitido.
+ * `common/` → @/modules/* (valor) sigue prohibido: la composición vive en app/.
+ * lens07() corre por módulo e ignora libs; esto es global para cubrirlas.
+ */
+function lens07LibraryImportsModules() {
+  const violations = [];
+  const checkDirs = [
+    { lib: "common", allowModules: false, allowCommon: true },
+    { lib: "shared", allowModules: false, allowCommon: false },
+  ];
+  for (const { lib, allowCommon } of checkDirs) {
+    const libDir = join(ROOT, "src", lib);
+    for (const f of findFiles(libDir, /\.(ts|tsx)$/)) {
+      const content = readFileSafe(f);
+      if (!content) continue;
+      const relPath = getRelativePath(f);
+      if (/\/\/\s*EXCEPTION/.test(content)) continue;
+      const lines = content.split("\n");
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const isTypeOnly = /^\s*import\s+type\b/.test(line);
+        if (line.includes("@/modules/") && !isTypeOnly) {
+          violations.push({
+            lens: "07",
+            severity: "🔴",
+            file: `${relPath}:${i + 1}`,
+            msg: `Fuga DAG: "${lib}/" importa valor de @/modules/*. Solo import type permitido. Mover el consumidor a app/`,
+          });
+        }
+        if (!allowCommon && line.includes("@/common/")) {
+          violations.push({
+            lens: "07",
+            severity: "🔴",
+            file: `${relPath}:${i + 1}`,
+            msg: `Ciclo potencial: "shared/" importa de @/common/*. shared/ es hoja pura (react/third-party + tipos). Invertir: mover lo compartido a shared/ o el consumidor a common/`,
+          });
+        }
+      }
+    }
+  }
+  return violations;
+}
+
+export { lens07AppImports, lens07CycleGraph, lens07DeepImportNotExported, lens07LibraryImportsModules };

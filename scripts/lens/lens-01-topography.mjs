@@ -153,6 +153,65 @@ export default function lens01(modName) {
     }
   }
 
+  // ── FASE 7b: Cajón de sastre en lib/ (aplica también a librerías) ─────
+  // FASE 7 no corre en libs (!lib): por eso shared/lib/utils.ts pasaba.
+  // Un lib/*.ts con basename catch-all mezcla concerns → dividir en *.util.ts.
+  {
+    const CATCH_ALL = new Set(["utils.ts", "util.ts", "helpers.ts", "helper.ts", "misc.ts", "common.ts", "shared.ts"]);
+    const libFiles = findFiles(join(modPath, "lib"), /\.ts$/);
+    for (const f of libFiles) {
+      const name = f.split(/[/\\]/).pop();
+      if (CATCH_ALL.has(name)) {
+        violations.push({
+          lens: "01",
+          severity: "🟠",
+          file: getRelativePath(f),
+          msg: `Cajón de sastre en lib/: ${name} mezcla concerns (cn, random, fechas…). Dividir en *.util.ts por propósito`,
+        });
+      }
+    }
+  }
+
+  // ── FASE 5b: hooks/ solo contiene hooks (y viceversa) ────────────────
+  // Aplica a módulos Y librerías: aquí vivían LandingScrollProvider,
+  // WorkScrollProvider y menuContext (componentes/contexts en hooks/).
+  {
+    const allTsFiles = findFiles(modPath, /\.tsx?$/);
+    for (const f of allTsFiles) {
+      const segments = f.split(/[/\\]/);
+      const name = segments.pop();
+      const inHooks = segments.includes("hooks");
+      const inUi = segments.includes("ui");
+      const relPath = getRelativePath(f);
+      if (name === "index.ts") continue;
+
+      if (inHooks && !/^use-[a-z0-9-]+\.ts$/.test(name)) {
+        const hint = name.endsWith(".tsx")
+          ? "es un componente: mover a ui/ o providers/"
+          : /context/i.test(name)
+            ? "es un context: colocalizar en providers/ junto a su provider"
+            : /\.util\.ts$/.test(name)
+              ? "es una utilidad: mover a lib/"
+              : "no sigue use-kebab-case: renombrar o mover según su rol";
+        violations.push({
+          lens: "01",
+          severity: "🟠",
+          file: relPath,
+          msg: `No-hook en hooks/: ${name} ${hint}`,
+        });
+      }
+
+      if (inUi && /^use-[a-z0-9-]+\.tsx?$/.test(name) && !/\.store\.ts$/.test(name) && !segments.includes("internal")) {
+        violations.push({
+          lens: "01",
+          severity: "🟡",
+          file: relPath,
+          msg: `Hook en ui/: ${name}. Mover a hooks/`,
+        });
+      }
+    }
+  }
+
   // ── FASE 8: Brújula UI — estructura semántica recursiva ───────────────
   if (!lib) {
     const uiDir = join(modPath, "ui");
@@ -349,5 +408,32 @@ export function lens01Global() {
       });
     }
   }
+
+  // ── 2ª pata FASE 7b: mismo *.util.ts en 2+ sitios → centralizar en shared/lib/
+  // src/lib (canónico shadcn, components.json → @/lib/utils) queda exento: es del CLI.
+  {
+    const byName = new Map();
+    const scopes = ["modules", "shared", "common", "app"].map((s) => join(ROOT, "src", s));
+    for (const scope of scopes) {
+      if (!existsSync(scope)) continue;
+      for (const f of findFiles(scope, /\.util\.ts$/)) {
+        const name = f.split(/[/\\]/).pop();
+        if (!byName.has(name)) byName.set(name, []);
+        byName.get(name).push(getRelativePath(f));
+      }
+    }
+    for (const [name, files] of byName) {
+      const owners = new Set(files.map((p) => p.split("/").slice(0, 3).join("/")));
+      if (owners.size >= 2) {
+        violations.push({
+          lens: "01",
+          severity: "🟡",
+          file: files.join(", "),
+          msg: `Utilidad duplicada "${name}" en ${owners.size} sitios. Centralizar en src/shared/lib/ y re-exportar o importar de ahí`,
+        });
+      }
+    }
+  }
+
   return violations;
 }

@@ -1,5 +1,5 @@
-import { Magentic } from "@/common";
-import { cn } from "@/shared";
+import { MagneticLink } from "@/common";
+import { cn } from "cn";
 
 type FooterGroupProps = {
   title: string;
@@ -16,7 +16,7 @@ export function FooterGroup({ title, links, isMagnetic = false, className }: Foo
         {links.map((link, index) => (
           <li key={index}>
             {isMagnetic ? (
-              <Magentic
+              <MagneticLink
                 strength={50}
                 className="mask relative text-[0.8em] text-colorLight/90"
                 scrambleParams={{
@@ -28,7 +28,7 @@ export function FooterGroup({ title, links, isMagnetic = false, className }: Foo
                 hoverUnderline
               >
                 <p className="scrambleText inline-block text-left">{link.text}</p>
-              </Magentic>
+              </MagneticLink>
             ) : (
               <p className="mask text-[0.8em] text-colorLight/90">{link.text}</p>
             )}

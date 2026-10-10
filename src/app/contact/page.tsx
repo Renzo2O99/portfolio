@@ -3,13 +3,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Header, HeaderNavigation, Input, Textarea } from "@/common";
-import { contactFormSchema, Footer, type TFormSchema } from "@/modules/contact";
+import { Button, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Header, Input, Textarea } from "@/common";
+import { FullscreenMenu } from "../FullscreenMenu";
+import { contactFormSchema, Footer, type ContactFormValues } from "@/modules/contact";
 import { sendEmail } from "@/modules/contact/server";
 
-export default function ProfileForm() {
+export default function ContactPage() {
   const [status, setStatus] = useState<"Initial" | "Loading" | "Success" | "Error">("Initial");
-  const form = useForm<TFormSchema>({
+  const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
       name: "",
@@ -18,7 +19,7 @@ export default function ProfileForm() {
     },
   });
 
-  const onMyFormSubmit = async (data: TFormSchema) => {
+  const onMyFormSubmit = async (data: ContactFormValues) => {
     setStatus("Loading");
     const result = await sendEmail(data);
     if (result.success) {
@@ -60,7 +61,7 @@ export default function ProfileForm() {
   return (
     <>
       <Header color="Light"></Header>
-      <HeaderNavigation />
+      <FullscreenMenu />
       <main className="darkGradient relative flex  w-full flex-col items-start justify-center px-paddingX py-paddingY text-[clamp(20px,_1.3vw_+_8px,_120px)] text-colorLight">
         <h1 className="mb-[1.5em] mt-[0.5em] text-[12.2vw] font-bold leading-[0.9] tracking-tight md:text-[clamp(16px,_6.3vw_+_8px,_120px)]">
           Let's start a <br /> project together

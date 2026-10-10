@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Script from "next/script";
 import type { ReactNode } from "react";
-import GoogleAnalytics from "@/app/GoogleAnalytics";
+import { GoogleAnalytics } from "@/app/GoogleAnalytics";
 
 import "./globals.css";
 import { PageTransition } from "@/common";

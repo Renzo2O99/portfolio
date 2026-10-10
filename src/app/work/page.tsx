@@ -3,9 +3,10 @@
 import { useState } from "react";
 import "../work.css";
 import "../header.css";
-import { Cursor, HeaderNavigation } from "@/common";
-import { WorkNav, WorkPageSection } from "@/modules/work";
-import { FullpageProviderWork } from "@/shared";
+import { CustomCursor } from "@/common";
+import { FullscreenMenu } from "../FullscreenMenu";
+import { WorkSectionNav, WorkPageSection } from "@/modules/work";
+import { WorkScrollProvider } from "@/shared";
 
 const projectsData = [
   {
@@ -75,20 +76,20 @@ export default function WorkPage() {
 
   return (
     <>
-      <Cursor />
-      <HeaderNavigation />
+      <CustomCursor />
+      <FullscreenMenu />
       <div className="background">
         PROJECTS
         <br />
         PROJECTS
       </div>
-      <FullpageProviderWork onSectionChange={setActive} overlay={<WorkNav total={projectsData.length} active={active} />}>
-        <div id="fullpage">
+      <WorkScrollProvider onSectionChange={setActive} overlay={<WorkSectionNav total={projectsData.length} active={active} />}>
+        <div id="work-sections">
           {projectsData.map((project, index) => (
             <WorkPageSection key={index} project={project} index={index} color={index % 2 !== 0 ? "Light" : "Dark"} />
           ))}
         </div>
-      </FullpageProviderWork>
+      </WorkScrollProvider>
     </>
   );
 }

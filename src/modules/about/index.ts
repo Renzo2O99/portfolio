@@ -9,6 +9,6 @@ export type { ProjectCardProps, TestimonialCardProps } from "./models/about.type
 export { ProjectCard } from "./ui/cards/ProjectCard";
 export { TestimonialCard } from "./ui/cards/TestimonialCard";
 export { AboutMarquee } from "./ui/parts/AboutMarquee";
-export { AboutWrapper } from "./ui/parts/AboutWrapper";
+export { AboutContent } from "./ui/parts/AboutContent";
 export { ErrorBoundary } from "./ui/parts/ErrorBoundary";
 export { AboutSection } from "./ui/sections/AboutSection";

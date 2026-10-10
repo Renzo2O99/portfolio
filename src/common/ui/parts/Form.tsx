@@ -1,7 +1,7 @@
 import { type ComponentPropsWithoutRef, cloneElement, createContext, type ElementRef, forwardRef, type HTMLAttributes, isValidElement, type ReactElement, useContext, useId } from "react";
 import { Controller, type ControllerProps, type FieldPath, type FieldValues, FormProvider, useFormContext } from "react-hook-form";
 import { Label } from "@/common/ui/parts/Label";
-import { cn } from "@/shared/lib/utils";
+import { cn } from "cn";
 
 const Form = FormProvider;
 

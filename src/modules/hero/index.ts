@@ -5,11 +5,11 @@
 // TIMELINE: Q4 2026
 
 export { HERO_TEXTS } from "./lib/hero-texts.constants";
-export type { GLTFNodeWithGeometry, ImageSequenceProps, Object3DProps } from "./models/hero.types";
-export { HeroModal } from "./ui/modals/HeroModal";
+export type { HeroFrameScrubberProps } from "./models/hero.types";
+export { HeroCanvas } from "./ui/modals/HeroCanvas";
 export { ErrorBoundary } from "./ui/parts/ErrorBoundary";
-export { HeroButton } from "./ui/parts/HeroButton";
+export { LatestWorkCta } from "./ui/parts/LatestWorkCta";
 export { HeroMarquee } from "./ui/parts/HeroMarquee";
-export { HeroWrapper } from "./ui/parts/HeroWrapper";
-export { ImageSequence } from "./ui/parts/ImageSequence";
+export { HeroContent } from "./ui/parts/HeroContent";
+export { HeroFrameScrubber } from "./ui/parts/HeroFrameScrubber";
 export { HeroSection } from "./ui/sections/HeroSection";
